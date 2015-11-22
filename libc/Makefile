@@ -1,5 +1,5 @@
 OUTPUT = libc.a
-OBJ = string.o
+OBJ = string.o stdio.o panic.o
 
 all: $(OUTPUT)
 

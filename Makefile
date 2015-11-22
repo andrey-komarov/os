@@ -51,5 +51,6 @@ clean:
 		echo "Cleaning $$dir"; \
 		$(MAKE) --no-print-directory clean -C $$dir; \
 	done
+	rm -rf $(ISO) $(ISO_ROOT)
 
 .PHONY: all clean $(ISO)

@@ -38,6 +38,13 @@ void tty_put(char ch, uint8_t color, size_t r, size_t c)
 
 void tty_putchar(char ch)
 {
+  if (ch == '\n')
+    {
+      column = 0;
+      if (++row == ROWS)
+        row = 0;
+      return;
+    }
   tty_put(ch, color, row, column);
   if (++column == COLUMNS)
     {
