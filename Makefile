@@ -3,7 +3,8 @@
 export TARGET = i686-elf
 
 export CC = $(TARGET)-gcc
-export CFLAGS = -Wall -Wextra -Wpedantic -std=c99 -ffreestanding -O2 -I.. -I.
+export CFLAGS = -Wall -Wextra -Wpedantic -std=c99 -nostdlib -ffreestanding -I.. -I. -lgcc
+export LIBGCC = $(shell $(CC) -print-libgcc-file-name)
 
 export AS = $(TARGET)-as
 export ASFLAGS = 
@@ -15,7 +16,7 @@ export AR = $(TARGET)-ar
 export ARFLAGS = rcs
 
 QEMU ?= qemu-system-i386
-QEMUFLAGS ?= -m 2048 -boot d
+QEMUFLAGS ?= -m 512 -boot d
 
 GRUB_MKRESCUE ?= grub-mkrescue
 ISO_ROOT ?= isoroot
@@ -38,7 +39,7 @@ $(ISO): $(KERNEL)
 
 $(KERNEL): $(OBJ)
 	-mkdir -p $(OUTPUT_DIR)
-	$(LD) $(LDFLAGS) $^ -o $@
+	$(LD) $(LDFLAGS) $^ $(LIBGCC) -o $@
 
 %.a: FORCE
 	@echo "Building $(shell dirname $@)"

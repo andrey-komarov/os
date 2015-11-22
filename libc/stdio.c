@@ -6,7 +6,7 @@
 
 static const char* digits = "0123456789abcdef";
 
-static char* uitoa(char* str, unsigned x, int radix)
+static char* uitoa(char* str, unsigned long long x, int radix)
 {
   if (x == 0)
     {
@@ -29,7 +29,7 @@ static char* uitoa(char* str, unsigned x, int radix)
   return str + len;
 }
 
-static char* itoa(char* str, int x, int radix)
+static char* itoa(char* str, long long x, int radix)
 {
   if (x < 0)
     {
@@ -57,26 +57,32 @@ int sprintf(char *str, const char *format, ...)
       else
 	{
 	  char modifier = format[1];
-	  if (modifier == 'd')
+	  if (modifier == 'l' && format[2] == 'l' && format[3] == 'x')
 	    {
-	      int arg_d = va_arg(args, int);
-	      str = itoa(str, arg_d, 10);
+	      long long arg = va_arg(args, long long);
+	      str = itoa(str, arg, 16);
+	      format += 4;
+	    }
+	  else if (modifier == 'd')
+	    {
+	      int arg = va_arg(args, int);
+	      str = itoa(str, arg, 10);
 	      format += 2;
 	    }
 	  else if (modifier == 's')
 	    {
-	      char* arg_s = va_arg(args, char*);
-	      size_t len = strlen(arg_s);
-	      memcpy(str, arg_s, strlen(arg_s));
+	      char* arg = va_arg(args, char*);
+	      size_t len = strlen(arg);
+	      memcpy(str, arg, strlen(arg));
 	      str += len;
 	      format += 2;
 	    }
 	  else if (modifier == 'p')
 	    {
-	      void* arg_p = va_arg(args, void*);
+	      void* arg = va_arg(args, void*);
 	      str[0] = '0';
 	      str[1] = 'x';
-	      str = uitoa(str + 2, (unsigned)arg_p, 16);
+	      str = uitoa(str + 2, (unsigned)arg, 16);
 	      format += 2;
 	    }
 	  else
