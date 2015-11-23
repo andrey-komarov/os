@@ -42,9 +42,14 @@ static char* itoa(char* str, long long x, int radix)
 
 int sprintf(char *str, const char *format, ...)
 {
-  char ch;
   va_list args;
   va_start(args, format);
+  return vsprintf(str, format, args);
+}
+
+int vsprintf(char *str, const char *format, va_list args)
+{
+  char ch;
   char* start_str = str;
   while ((ch = *format) != 0)
     {
@@ -69,6 +74,12 @@ int sprintf(char *str, const char *format, ...)
 	      str = itoa(str, arg, 10);
 	      format += 2;
 	    }
+	  else if (modifier == 'u')
+	    {
+	      unsigned arg = va_arg(args, unsigned);
+	      str = uitoa(str, arg, 10);
+	      format += 2;
+	    }
 	  else if (modifier == 's')
 	    {
 	      char* arg = va_arg(args, char*);
@@ -85,6 +96,11 @@ int sprintf(char *str, const char *format, ...)
 	      str = uitoa(str + 2, (unsigned)arg, 16);
 	      format += 2;
 	    }
+	  else if (modifier == '%')
+	    {
+	      str[0] = '%';
+	      format += 2;
+	    }
 	  else
 	    {
 	      *str = '%';
@@ -94,6 +110,6 @@ int sprintf(char *str, const char *format, ...)
 	}
     }
   *str = 0;
-  return start_str - str;
+  return str - start_str;
 }
 

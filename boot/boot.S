@@ -22,6 +22,10 @@ stack_top:
 _start:
 	movl $stack_top, %esp
 
+        # Multiboot information structure
+        pushl %ebx
+        # magic
+        pushl %eax
 	call kernel_main
 
 	cli
