@@ -52,6 +52,22 @@ uint8_t gdt_get_priv(gdt_entry_t* entry)
 gdt_entry_t gdt[GDT_SIZE];
 tss_entry_t tss;
 
+static void reload_segments()
+{
+  __asm volatile(
+    "ljmp %0, $.reload_cs\n\t"
+    ".reload_cs:\n\t"
+    "movw %1, %%ax\n\t"
+    "movw %%ax, %%ds\n\t"
+    "movw %%ax, %%es\n\t"
+    "movw %%ax, %%fs\n\t"
+    "movw %%ax, %%gs\n\t"
+    "movw %%ax, %%ss\n\t"
+    :
+    : "i"(KERNEL_CODE_SEGMENT * sizeof(gdt_entry_t)), "i"(KERNEL_DATA_SEGMENT * sizeof(gdt_entry_t))
+    : "ax");
+}
+
 void set_gdtr(uint16_t size, gdt_entry_t* addr)
 {
   struct {
@@ -60,6 +76,7 @@ void set_gdtr(uint16_t size, gdt_entry_t* addr)
   } __attribute__((packed)) gdtr = {.size = size - 1, .addr = (uint32_t)addr};
 
   __asm volatile("lgdt (%0)": : "a"(&gdtr));
+  reload_segments();
 }
 
 void init_gdt()

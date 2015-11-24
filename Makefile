@@ -3,7 +3,7 @@
 export TARGET = i686-elf
 
 export CC = $(TARGET)-gcc
-export CFLAGS = -Wall -Wextra -Wpedantic -std=c99 -nostdlib -ffreestanding -I.. -I. -lgcc
+export CFLAGS = -Wall -Wextra -Wpedantic -std=c99 -nostdlib -ffreestanding -I.. -I. -lgcc -g
 export LIBGCC = $(shell $(CC) -print-libgcc-file-name)
 
 export AS = $(TARGET)-as
