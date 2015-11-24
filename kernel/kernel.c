@@ -2,6 +2,7 @@
 #include "libc/stdio.h"
 #include "libc/panic.h"
 #include "boot/multiboot.h"
+#include "gdt.h"
 
 static char printk_buf[1 << 13];
 int printk(const char* format, ...)
@@ -27,6 +28,15 @@ void kernel_main(unsigned long magic, multiboot_info_t *mbi)
   printk("flags = %p", mbi->flags);
 
   printk("mem_lower = %u KB, mem_upper = %u KB", mbi->mem_lower, mbi->mem_upper);
+  
+  if (!(mbi->flags & (1 << 5)))
+    panic("expected EFL metadata");
+  
+  printk("ELF info: num = %u, size = %u, addr = %p, shndx = %p", 
+         mbi->u.elf_sec.num, mbi->u.elf_sec.size, mbi->u.elf_sec.addr, 
+         mbi->u.elf_sec.shndx);
+  
+  init_gdt();
 
   panic("AAAAAAAAAA");
 }
