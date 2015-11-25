@@ -42,8 +42,8 @@ void kernel_main(unsigned long magic, multiboot_info_t *mbi)
   init_interrupts();
   enable_interrupts();
   
-  __asm("int $0x50");
-  __asm("int $0x50");
+  for (int i = 0; i < 20; i++)
+    __asm("int $0x50");
   
   printk("o/");
   
