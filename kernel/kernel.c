@@ -39,6 +39,19 @@ void kernel_main(unsigned long magic, multiboot_info_t *mbi)
   
   disable_interrupts();
   init_gdt();
+  init_interrupts();
+  enable_interrupts();
+  
+  __asm("int $0x50");
+  __asm("int $0x50");
+  
+  printk("o/");
+  
+  while (1)
+    {
+      __asm volatile("hlt");
+    }
+  
 
   panic("AAAAAAAAAA");
 }

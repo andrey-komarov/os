@@ -1,5 +1,5 @@
 OUTPUT = kernel.a
-OBJ = kernel.o interrupts.o gdt.o
+OBJ = kernel.o interrupts.o gdt.o handler.o
 
 all: $(OUTPUT)
 
