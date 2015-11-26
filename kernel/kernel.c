@@ -4,6 +4,7 @@
 #include "boot/multiboot.h"
 #include "gdt.h"
 #include "interrupts.h"
+#include "pic.h"
 
 static char printk_buf[1 << 13];
 int printk(const char* format, ...)
@@ -41,6 +42,7 @@ void kernel_main(unsigned long magic, multiboot_info_t *mbi)
   init_gdt();
   init_interrupts();
   enable_interrupts();
+  pic_remap(PIC1, PIC2);
   
   for (int i = 0; i < 20; i++)
     __asm("int $0x50");

@@ -21,5 +21,7 @@ void enable_interrupts();
 void disable_interrupts();
 
 void interrupt_handler();
+void irq0_handler();
+void irq1_handler();
 
 #endif // _INTERRUPTS_H

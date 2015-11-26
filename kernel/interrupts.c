@@ -1,6 +1,7 @@
 #include "interrupts.h"
 #include "gdt.h"
 #include "kernel.h"
+#include "pic.h"
 
 static idt_entry_t idt[IDT_SIZE];
 
@@ -16,18 +17,26 @@ void set_idt(uint16_t size, idt_entry_t* addr)
   printk("Liftoff!");
 }
 
+static void isr_init(idt_entry_t* idt, uint32_t addr)
+{
+      idt->offset_1 = ((uint32_t)addr) & 0xffff;
+      idt->selector = KERNEL_CODE_SEGMENT * 8;
+      idt->zero = 0;
+      // 0x80 - present
+      // type = 32-bit interrupt gate
+      idt->type_attr = 0x8e;
+      idt->offset_2 = (((uint32_t)addr) >> 16) & 0xffff;
+}
+
 void init_interrupts()
 {
   for (int i = 0; i < IDT_SIZE; i++)
     {
-      idt[i].offset_1 = ((uint32_t)interrupt_handler) & 0xffff;
-      idt[i].selector = KERNEL_CODE_SEGMENT * 8;
-      idt[i].zero = 0;
-      // 0x80 - present
-      // type = 32-bit interrupt gate
-      idt[i].type_attr = 0x8e;
-      idt[i].offset_2 = (((uint32_t)interrupt_handler) >> 16) & 0xffff;
+      isr_init(&idt[i], (uint32_t)interrupt_handler);
     }
+        
+  isr_init(&idt[PIC1 + 0], (uint32_t)irq0_handler);
+  isr_init(&idt[PIC1 + 1], (uint32_t)irq1_handler);
   
   set_idt(sizeof(idt), idt);
 }
