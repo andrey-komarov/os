@@ -4,6 +4,7 @@
 .global irq0_handler
 .global irq1_handler
 .extern printk
+.extern pic_send_eoi
 
 interrupt_handler:
         pushl %esp
@@ -16,15 +17,24 @@ interrupt_handler:
 
 # timer
 irq0_handler:
-        pushl $timer
-        call printk
+        #pushl $timer
+        #call printk
+        #addl $4, %esp
+        pushl $0
+        call pic_send_eoi
         addl $4, %esp
         iret
         
 # kbd
 irq1_handler:
+        xor %eax, %eax
+        inb $0x60, %al
+        pushl %eax
         pushl $keypressed
         call printk
+        addl $8, %esp
+        pushl $0
+        call pic_send_eoi
         addl $4, %esp
         iret
  
@@ -34,5 +44,5 @@ irq1_handler:
 x:      .long 0
         
 hello:  .asciz "Interrupt #%d esp=%p!"
-keypressed:      .asciz "Key pressed!"
+keypressed:      .asciz "Key pressed: %p!"
 timer:      .asciz "Hello timer"
