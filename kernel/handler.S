@@ -17,9 +17,9 @@ interrupt_handler:
 
 # timer
 irq0_handler:
-        #pushl $timer
-        #call printk
-        #addl $4, %esp
+        pushl $timer
+        call printk
+        addl $4, %esp
         pushl $0
         call pic_send_eoi
         addl $4, %esp

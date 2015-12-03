@@ -18,8 +18,20 @@ stack_top:
 
 .section .text
 .global _start
+.global bootp_page_dir
 .type _start, @function
 _start:
+        cli
+        mov $bootp_page_dir, %ecx
+        subl $0xc0000000, %ecx
+        mov %ecx, %cr3
+        mov %cr4, %ecx
+        orl $0x00000010, %ecx
+        mov %ecx, %cr4
+        mov %cr0, %ecx
+        orl $0x80000000, %ecx
+        mov %ecx, %cr0
+
 	movl $stack_top, %esp
 
         # Multiboot information structure
