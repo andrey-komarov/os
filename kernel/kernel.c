@@ -5,6 +5,7 @@
 #include "gdt.h"
 #include "interrupts.h"
 #include "pic.h"
+#include "userspace.h"
 
 static char printk_buf[1 << 13];
 int printk(const char* format, ...)
@@ -41,13 +42,17 @@ void kernel_main(unsigned long magic, multiboot_info_t *mbi)
   disable_interrupts();
   init_gdt();
   init_interrupts();
-  enable_interrupts();
   pic_remap(PIC1, PIC2);
+  enable_interrupts();
   
+  /*
   for (int i = 0; i < 20; i++)
     __asm("int $0x50");
+  */
   
   printk("o/");
+  
+  test_userspace();
   
   while (1)
     {

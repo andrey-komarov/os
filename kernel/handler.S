@@ -3,6 +3,9 @@
 .global interrupt_handler
 .global irq0_handler
 .global irq1_handler
+.global irq8_handler
+.global irq13_handler
+.global irq14_handler
 .extern printk
 .extern pic_send_eoi
 
@@ -38,6 +41,26 @@ irq1_handler:
         addl $4, %esp
         iret
  
+# double fault
+irq8_handler:
+        pushl $doublefault
+        call printk
+        addl $4, %esp
+        iret
+
+# gpf
+irq13_handler:
+        pushl $gpf
+        call printk
+        addl $4, %esp
+        iret
+
+# page fault
+irq14_handler:
+        pushl $pagefault
+        call printk
+        addl $4, %esp
+        iret
 
 .section .data
 
@@ -46,3 +69,6 @@ x:      .long 0
 hello:  .asciz "Interrupt #%d esp=%p!"
 keypressed:      .asciz "Key pressed: %p!"
 timer:      .asciz "Hello timer"
+gpf:    .asciz "General Protection Failed"
+pagefault:      .asciz "Page Fault"
+doublefault:      .asciz "Page Fault"

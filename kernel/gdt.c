@@ -78,6 +78,8 @@ void set_gdtr(uint16_t size, gdt_entry_t* addr)
   reload_segments();
 }
 
+char kernel_stack[4096];
+
 void init_gdt()
 {
   for (int i = 0; i < GDT_SIZE; i++)
@@ -128,6 +130,7 @@ void init_gdt()
   
   set_gdtr(sizeof(gdt), gdt);
   
+  tss_entry.esp0 = kernel_stack + sizeof(kernel_stack);
   tss_entry.ss0 = KERNEL_DATA_SEGMENT * sizeof(gdt_entry_t);
   
   tss_flush();

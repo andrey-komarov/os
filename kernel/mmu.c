@@ -5,6 +5,6 @@
  * AAAAAAAA AAAAAAAA AAAAXXXG S0ADWURP
  */
 uint32_t bootp_page_dir[PAGE_DIR_SIZE] __attribute__((aligned(0x1000))) = {
-  [0] = 0x00000083, // Present, Huge, RW
-  [0xc0000000 >> 22] = 0x00000083 // Present, Huge, RW
+  [0] = PD_PRESENT | PD_RW | PD_HUGE,
+  [0xc0000000 >> 22] = PD_PRESENT | PD_RW | PD_HUGE
 };

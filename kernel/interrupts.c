@@ -12,9 +12,8 @@ void set_idt(uint16_t size, idt_entry_t* addr)
     uint32_t addr;
   } __attribute__((packed)) gdtr = {.size = size - 1, .addr = (uint32_t)addr};
 
-  printk("Ready to launch!");
   __asm volatile("lidt (%0)": : "a"(&gdtr));
-  printk("Liftoff!");
+  printk("IDT set");
 }
 
 static void isr_init(idt_entry_t* idt, uint32_t addr)
@@ -37,6 +36,9 @@ void init_interrupts()
         
   isr_init(&idt[PIC1 + 0], (uint32_t)irq0_handler);
   isr_init(&idt[PIC1 + 1], (uint32_t)irq1_handler);
+  isr_init(&idt[INT_DOUBLE_FAULT], (uint32_t)irq8_handler);
+  isr_init(&idt[INT_GPF], (uint32_t)irq13_handler);
+  isr_init(&idt[INT_PAGE_FAULT], (uint32_t)irq14_handler);
   
   set_idt(sizeof(idt), idt);
 }

@@ -4,6 +4,9 @@
 #include <stdint.h>
 
 #define IDT_SIZE 256
+#define INT_DOUBLE_FAULT 8
+#define INT_GPF 13
+#define INT_PAGE_FAULT 14
 
 typedef struct
 {
@@ -23,5 +26,8 @@ void disable_interrupts();
 void interrupt_handler();
 void irq0_handler();
 void irq1_handler();
+void irq8_handler();
+void irq13_handler();
+void irq14_handler();
 
 #endif // _INTERRUPTS_H
