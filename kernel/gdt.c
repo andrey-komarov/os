@@ -50,7 +50,6 @@ uint8_t gdt_get_priv(gdt_entry_t* entry)
 }
 
 gdt_entry_t gdt[GDT_SIZE];
-tss_entry_t tss;
 
 static void reload_segments()
 {
@@ -103,13 +102,33 @@ void init_gdt()
   gdt[KERNEL_DATA_SEGMENT].flags |=
     GDT_FLAGS_GR | GDT_FLAGS_SZ;
   
-  gdt_set_base(&gdt[TSS_SEGMENT], (uint32_t)&tss);
-  gdt_set_limit(&gdt[TSS_SEGMENT], sizeof(tss));
-  gdt_set_priv(&gdt[TSS_SEGMENT], 0);
+  gdt_set_base(&gdt[USER_CODE_SEGMENT], 0);
+  gdt_set_limit(&gdt[USER_CODE_SEGMENT], 0xfffff);
+  gdt_set_priv(&gdt[USER_CODE_SEGMENT], 3);
+  gdt[USER_CODE_SEGMENT].access |=
+    GDT_ACCESS_PR | GDT_ACCESS_EX | GDT_ACCESS_RW;
+  gdt[USER_CODE_SEGMENT].flags |=
+    GDT_FLAGS_GR | GDT_FLAGS_SZ;
+
+  gdt_set_base(&gdt[USER_DATA_SEGMENT], 0);
+  gdt_set_limit(&gdt[USER_DATA_SEGMENT], 0xfffff);
+  gdt_set_priv(&gdt[USER_DATA_SEGMENT], 3);
+  gdt[USER_DATA_SEGMENT].access |=
+    GDT_ACCESS_PR | GDT_ACCESS_RW;
+  gdt[USER_DATA_SEGMENT].flags |=
+    GDT_FLAGS_GR | GDT_FLAGS_SZ;
+  
+  gdt_set_base(&gdt[TSS_SEGMENT], (uint32_t)&tss_entry);
+  gdt_set_limit(&gdt[TSS_SEGMENT], sizeof(tss_entry));
+  gdt_set_priv(&gdt[TSS_SEGMENT], 3);
   gdt[TSS_SEGMENT].access =
     GDT_ACCESS_PR | GDT_ACCESS_EX | GDT_ACCESS_AC;
   gdt[TSS_SEGMENT].flags |=
     GDT_FLAGS_SZ;
   
   set_gdtr(sizeof(gdt), gdt);
+  
+  tss_entry.ss0 = KERNEL_DATA_SEGMENT * sizeof(gdt_entry_t);
+  
+  tss_flush();
 }

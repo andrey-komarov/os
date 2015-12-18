@@ -3,11 +3,13 @@
 
 #include <stdint.h>
 
-#define GDT_SIZE 4
+#define GDT_SIZE 6
 #define EMPTY_SEGMENT 0
 #define KERNEL_CODE_SEGMENT 1
 #define KERNEL_DATA_SEGMENT 2
-#define TSS_SEGMENT 3
+#define USER_CODE_SEGMENT 3
+#define USER_DATA_SEGMENT 4
+#define TSS_SEGMENT 5
 
 #define GDT_ACCESS_AC (1 << 0)
 #define GDT_ACCESS_RW (1 << 1)

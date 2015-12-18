@@ -1,6 +1,8 @@
 #ifndef _TSS_H
 #define _TSS_H
 
+#include <stdint.h>
+
 typedef struct tss_entry
 {
   uint32_t link;
@@ -16,6 +18,7 @@ typedef struct tss_entry
   uint32_t eax;
   uint32_t ecx;
   uint32_t edx;
+  uint32_t ebx;
   uint32_t esp;
   uint32_t ebp;
   uint32_t esi;
@@ -28,6 +31,10 @@ typedef struct tss_entry
   uint32_t gs;
   uint32_t ldtr;
   uint32_t iopb;
-} tss_entry_t;
+} __attribute__((packed)) tss_entry_t;
+
+extern tss_entry_t tss_entry;
+
+void tss_flush();
 
 #endif // _TSS_H
