@@ -11,7 +11,7 @@ export AR=$(TARGET)-ar
 export ARFLAGS=rcs
 
 OUTPUT=stdlib.a
-OBJ=syscall.o unistd.o start.o
+OBJ=syscall.o unistd.o start.o string.o stdio.o
 
 all: $(OUTPUT)
 
