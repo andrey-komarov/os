@@ -54,13 +54,52 @@ typedef struct {
 #define EV_CURRENT 1
 
 #define EI_OSABI 7
-// ???
+#define ELFOSABI_SYSV 0
 
 #define EI_ABIVERSION 8
-// ???
 
 #define EI_PAD 9
 
+
+#define ET_EXEC 2
+
+#define EM_386 3
+
+typedef struct {
+  uint32_t   p_type;
+  Elf32_Off  p_offset;
+  Elf32_Addr p_vaddr;
+  Elf32_Addr p_paddr;
+  uint32_t   p_filesz;
+  uint32_t   p_memsz;
+  uint32_t   p_flags;
+  uint32_t   p_align;
+} Elf32_Phdr;
+
+#define PT_LOAD 1
+
+#define PF_X 1
+#define PF_W 2
+#define PF_R 4
+
+typedef struct {
+  uint32_t   sh_name;
+  uint32_t   sh_type;
+  uint32_t   sh_flags;
+  Elf32_Addr sh_addr;
+  Elf32_Off  sh_offset;
+  uint32_t   sh_size;
+  uint32_t   sh_link;
+  uint32_t   sh_info;
+  uint32_t   sh_addralign;
+  uint32_t   sh_entsize;
+} Elf32_Shdr;
+
+#define SHT_NULL 0
+#define SHT_PROGBITS 1
+#define SHT_SYMTAB 2
+#define SHT_STRTAB 3
+#define SHT_NOBITS 8
 
 
 #endif // _ELF_H
