@@ -30,6 +30,8 @@ void *prepare_stack(int argc, char **argv)
   for (int i = 0; i < argc; i++)
     skip += strlen(argv[i]) + 1;
   char *top = (char*)stack + STACK_SIZE;
+  top -= 4;
+  *(uint32_t*)top = 0;
   char *top2 = top - skip;
   top2 -= 4;
   *(uint32_t*)top2 = 0;
@@ -58,7 +60,7 @@ void mmap_pheader(Elf32_Ehdr *hdr, Elf32_Phdr *phdr)
   if (phdr->p_flags & PF_R)
     prot |= PROT_READ;
   void *addr = (void*)(phdr->p_vaddr & ~(PAGE_SIZE - 1));
-  uint32_t size = ((phdr->p_memsz - 1) / PAGE_SIZE + 1) * PAGE_SIZE;
+  uint32_t size = ((((char*)phdr->p_vaddr) + phdr->p_memsz - (char*)addr - 1) / PAGE_SIZE + 1) * PAGE_SIZE;
   void *mem = mmap(addr, size, prot, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
   assert(mem == addr);
   memcpy((char*)phdr->p_vaddr, ((char*)hdr) + phdr->p_offset, phdr->p_filesz);
@@ -143,7 +145,7 @@ int main(int argc, char **argv)
       _exit(EXIT_FAILURE);
     }
   
-  void *m = mmap(NULL, 20000, PROT_READ, MAP_PRIVATE, fd, 0);
+  void *m = mmap(NULL, 1<<20, PROT_READ, MAP_PRIVATE, fd, 0);
   printf("m = %p\n", m);
   
   void *eip = verify_elf_header(m);
