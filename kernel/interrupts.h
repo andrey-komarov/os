@@ -7,6 +7,7 @@
 #define INT_DOUBLE_FAULT 8
 #define INT_GPF 13
 #define INT_PAGE_FAULT 14
+#define SYSCALL 0x80
 
 typedef struct
 {
@@ -29,5 +30,6 @@ void irq1_handler();
 void irq8_handler();
 void irq13_handler();
 void irq14_handler();
+void irq128_handler();
 
 #endif // _INTERRUPTS_H

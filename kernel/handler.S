@@ -6,6 +6,7 @@
 .global irq8_handler
 .global irq13_handler
 .global irq14_handler
+.global irq128_handler
 .extern printk
 .extern pic_send_eoi
 
@@ -62,6 +63,12 @@ irq14_handler:
         addl $4, %esp
         iret
 
+# syscall
+irq128_handler:
+        pushl $syscall
+        call printk
+        addl $4, %esp
+        iret
 .section .data
 
 x:      .long 0
@@ -72,3 +79,5 @@ timer:      .asciz "Hello timer"
 gpf:    .asciz "General Protection Failed"
 pagefault:      .asciz "Page Fault"
 doublefault:      .asciz "Page Fault"
+syscall:        .asciz "Syscall!"
+
