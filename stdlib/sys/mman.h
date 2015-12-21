@@ -10,5 +10,6 @@
 
 #define MAP_SHARED 1
 #define MAP_PRIVATE 2
+#define MAP_ANONYMOUS 32
 
 #endif // _SYS_MMAN_H

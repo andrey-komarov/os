@@ -21,7 +21,7 @@ int32_t write(int fd, const void *buf, size_t count);
 
 int open(const char *pathname, int flags);
 
-void *mmap2(void *addr, size_t length, int prot,
-            int flags, int fd, int pgoffset);
+void *mmap(void *addr, size_t length, int prot,
+            int flags, int fd, int offset);
 
 #endif // _UNISTD_H

@@ -4,6 +4,40 @@
 #include "stdio.h"
 #include "sys/mman.h"
 #include "assert.h"
+#include "string.h"
+
+#define PAGE_SIZE 4096
+
+void __attribute__((noreturn)) jmp(uint32_t addr) 
+{
+  __asm volatile(
+    "pushl %%eax\n\t"
+    "ret\n\t"
+    :
+    : "eax"(addr)
+    :
+                 );
+  __builtin_unreachable();
+}
+
+void mmap_pheader(Elf32_Ehdr *hdr, Elf32_Phdr *phdr)
+{
+  assert(phdr->p_type == PT_LOAD);
+  assert(phdr->p_align == PAGE_SIZE);
+  int prot = PROT_WRITE;
+  if (phdr->p_flags & PF_X)
+    prot |= PROT_EXEC;
+  if (phdr->p_flags & PF_W)
+    prot |= PROT_WRITE;
+  if (phdr->p_flags & PF_R)
+    prot |= PROT_READ;
+  void *addr = (void*)(phdr->p_vaddr & ~(PAGE_SIZE - 1));
+  uint32_t size = ((phdr->p_memsz - 1) / PAGE_SIZE + 1) * PAGE_SIZE;
+  void *mem = mmap(addr, size, prot, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  assert(mem == addr);
+  memcpy((char*)phdr->p_vaddr, ((char*)hdr) + phdr->p_offset, phdr->p_filesz);
+  memset((char*)phdr->p_vaddr + phdr->p_filesz, 0, phdr->p_memsz - phdr->p_filesz);
+}
 
 void verify_elf_header(Elf32_Ehdr *hdr)
 {
@@ -43,11 +77,13 @@ void verify_elf_header(Elf32_Ehdr *hdr)
           printf("  p_paddr = %p\n", pheaders[i].p_paddr);
           printf("  loading info: from %p, %d bytes from file, %d bytes total\n",
                  pheaders[i].p_vaddr, pheaders[i].p_filesz, pheaders[i].p_memsz);
-          printf("  %d alignment, %s%s%s\n",
+          printf("  %d alignment, %p offset, %s%s%s\n",
                  pheaders[i].p_align,
+                 pheaders[i].p_offset,
                  pheaders[i].p_flags & PF_X ? "x" : "-",
                  pheaders[i].p_flags & PF_W ? "w" : "-",
                  pheaders[i].p_flags & PF_R ? "r" : "-");
+          mmap_pheader(hdr, &pheaders[i]);
           break;
         default:
           printf("%d has unknown type: %d\n", i, pheaders[i].p_type);
@@ -60,8 +96,10 @@ void verify_elf_header(Elf32_Ehdr *hdr)
   printf("Checking sections\n");
   for (int i = 0; i < hdr->e_shnum; i++)
     {
-      printf("%d: %d %d\n", i, sheaders[i].sh_name, sheaders[i].sh_type);
+      printf("%d: %d %d %p\n", i, sheaders[i].sh_name, sheaders[i].sh_type, sheaders[i].sh_flags);
     }
+  
+  jmp(hdr->e_entry);
 }
 
 int main(int argc, char **argv)
@@ -79,7 +117,7 @@ int main(int argc, char **argv)
       _exit(EXIT_FAILURE);
     }
   
-  void *m = mmap2(NULL, 20000, PROT_READ, MAP_PRIVATE, fd, 0);
+  void *m = mmap(NULL, 20000, PROT_READ, MAP_PRIVATE, fd, 0);
   printf("m = %p\n", m);
   
   verify_elf_header(m);

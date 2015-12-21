@@ -17,8 +17,8 @@ int open(const char *path, int flags)
   return (int)syscall2(SYS_OPEN, (uint32_t)path, (uint32_t)flags);
 }
 
-void *mmap2(void *addr, size_t length, int prot,
-            int flags, int fd, int pgoffset)
+void *mmap(void *addr, size_t length, int prot,
+            int flags, int fd, int offset)
 {
   struct {
     uint32_t addr;
@@ -26,14 +26,14 @@ void *mmap2(void *addr, size_t length, int prot,
     uint32_t prot;
     uint32_t flags;
     uint32_t fd;
-    uint32_t pgoffset;
+    uint32_t pgoffset; // TODO pgoffset or simply offset here?
   } mm = {
     .addr = (uint32_t)addr,
     .length = length,
     .prot = prot,
     .flags = flags,
     .fd = fd,
-    .pgoffset = pgoffset
+    .pgoffset = offset
   };
   return (void*)syscall1(SYS_MMAP, (uint32_t)&mm);
 }
