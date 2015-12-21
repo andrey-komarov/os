@@ -15,4 +15,13 @@ void _exit(int status) __attribute__((noreturn));
 
 int32_t write(int fd, const void *buf, size_t count);
 
+#define O_RDONLY 0
+#define O_WRONLY 1
+#define O_RDWR 2
+
+int open(const char *pathname, int flags);
+
+void *mmap2(void *addr, size_t length, int prot,
+            int flags, int fd, int pgoffset);
+
 #endif // _UNISTD_H
