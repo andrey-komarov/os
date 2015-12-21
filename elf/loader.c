@@ -7,17 +7,43 @@
 #include "string.h"
 
 #define PAGE_SIZE 4096
+#define STACK_SIZE (4096 * 16)
 
-void __attribute__((noreturn)) jmp(uint32_t addr) 
+void __attribute__((noreturn)) jmp(void *eip, void *esp) 
 {
   __asm volatile(
+    "movl %%ebx, %%esp\n\t"
     "pushl %%eax\n\t"
     "ret\n\t"
     :
-    : "eax"(addr)
+    : "eax"(eip), "ebx"(esp)
     :
                  );
   __builtin_unreachable();
+}
+
+void *prepare_stack(int argc, char **argv)
+{
+  void *stack = mmap(NULL, STACK_SIZE, PROT_READ | PROT_WRITE,
+                     MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  int skip = 0;
+  for (int i = 0; i < argc; i++)
+    skip += strlen(argv[i]) + 1;
+  char *top = (char*)stack + STACK_SIZE;
+  char *top2 = top - skip;
+  top2 -= 4;
+  *(uint32_t*)top2 = 0;
+  for (int i = argc - 1; i >= 0; i--)
+    {
+      int len = strlen(argv[i]);
+      memcpy(top - len - 1, argv[i], len + 1);
+      top -= len + 1;
+      top2 -= 4;
+      *(char**)top2 = top;
+    }
+  top2 -= 4;
+  *(uint32_t*)top2 = argc;
+  return top2;
 }
 
 void mmap_pheader(Elf32_Ehdr *hdr, Elf32_Phdr *phdr)
@@ -39,7 +65,7 @@ void mmap_pheader(Elf32_Ehdr *hdr, Elf32_Phdr *phdr)
   memset((char*)phdr->p_vaddr + phdr->p_filesz, 0, phdr->p_memsz - phdr->p_filesz);
 }
 
-void verify_elf_header(Elf32_Ehdr *hdr)
+void *verify_elf_header(Elf32_Ehdr *hdr)
 {
   assert(hdr->e_ident[EI_MAG0] == ELFMAG0);
   assert(hdr->e_ident[EI_MAG1] == ELFMAG1);
@@ -99,14 +125,14 @@ void verify_elf_header(Elf32_Ehdr *hdr)
       printf("%d: %d %d %p\n", i, sheaders[i].sh_name, sheaders[i].sh_type, sheaders[i].sh_flags);
     }
   
-  jmp(hdr->e_entry);
+  return (void*)hdr->e_entry;
 }
 
 int main(int argc, char **argv)
 {
-  if (argc != 2)
+  if (argc < 2)
     {
-      printf("usage: %s <elf file>\n", argv[0]);
+      printf("usage: %s <elf file> <arg>*\n", argv[0]);
       _exit(EXIT_FAILURE);
     }
   
@@ -120,7 +146,9 @@ int main(int argc, char **argv)
   void *m = mmap(NULL, 20000, PROT_READ, MAP_PRIVATE, fd, 0);
   printf("m = %p\n", m);
   
-  verify_elf_header(m);
-  
+  void *eip = verify_elf_header(m);
+  void *esp = prepare_stack(argc - 1, argv + 1);
+  jmp(eip, esp);
+
   return 0;
 }
