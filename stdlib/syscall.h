@@ -12,7 +12,5 @@
 uint32_t syscall1(uint32_t syscall_num, uint32_t arg1);
 uint32_t syscall2(uint32_t syscall_num, uint32_t arg1, uint32_t arg2);
 uint32_t syscall3(uint32_t syscall_num, uint32_t arg1, uint32_t arg2, uint32_t arg3);
-uint32_t syscall6(uint32_t syscall_num, uint32_t arg1, uint32_t arg2,
-                  uint32_t arg3, uint32_t arg4, uint32_t arg5, uint32_t arg6);
 
 #endif // _SYSCALL_H
