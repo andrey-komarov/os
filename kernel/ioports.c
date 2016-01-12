@@ -10,6 +10,16 @@ uint8_t inb(uint16_t port)
   return result;
 }
 
+uint16_t inw(uint16_t port)
+{
+  uint16_t result;
+  __asm volatile("inw %1, %0"
+        : "=ax"(result)
+        : "dx"(port)
+        :);
+  return result;
+}
+
 void outb(uint16_t port, uint8_t value)
 {
   __asm volatile("outb %0, %1"

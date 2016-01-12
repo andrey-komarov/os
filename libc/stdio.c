@@ -68,6 +68,12 @@ int vsprintf(char *str, const char *format, va_list args)
 	      str = itoa(str, arg, 16);
 	      format += 4;
 	    }
+          else if (modifier == 'l' && format[2] == 'l' && format[3] == 'd')
+            {
+	      long long arg = va_arg(args, long long);
+	      str = itoa(str, arg, 10);
+	      format += 4;
+            }
 	  else if (modifier == 'd')
 	    {
 	      int arg = va_arg(args, int);

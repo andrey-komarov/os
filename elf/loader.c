@@ -76,7 +76,7 @@ void *verify_elf_header(Elf32_Ehdr *hdr)
   assert(hdr->e_ident[EI_CLASS] == ELFCLASS32);
   assert(hdr->e_ident[EI_DATA] == ELFDATA2LSB);
   assert(hdr->e_ident[EI_VERSION] == EV_CURRENT);
-  assert(hdr->e_ident[EI_OSABI] == ELFOSABI_SYSV);
+  //assert(hdr->e_ident[EI_OSABI] == ELFOSABI_SYSV);
   assert(hdr->e_ident[EI_ABIVERSION] == 0);
   for (int i = EI_PAD; i < EI_NIDENT; i++)
     assert(hdr->e_ident[i] == 0);

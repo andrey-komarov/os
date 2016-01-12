@@ -25,8 +25,10 @@ void enable_interrupts();
 void disable_interrupts();
 
 void interrupt_handler();
-void irq0_handler();
-void irq1_handler();
+void pic0_handler();
+void pic1_handler();
+void pic14_handler();
+void pic15_handler();
 void irq8_handler();
 void irq13_handler();
 void irq14_handler();

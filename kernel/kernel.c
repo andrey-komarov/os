@@ -6,6 +6,7 @@
 #include "interrupts.h"
 #include "pic.h"
 #include "userspace.h"
+#include "ata/ata.h"
 
 static char printk_buf[1 << 13];
 int printk(const char* format, ...)
@@ -52,7 +53,8 @@ void kernel_main(unsigned long magic, multiboot_info_t *mbi)
   
   printk("o/");
   
-  test_userspace();
+  //test_userspace();
+  identify();
   
   while (1)
     {

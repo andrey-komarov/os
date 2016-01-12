@@ -1,8 +1,10 @@
 
 .section .text
 .global interrupt_handler
-.global irq0_handler
-.global irq1_handler
+.global pic0_handler
+.global pic1_handler
+.global pic14_handler
+.global pic15_handler
 .global irq8_handler
 .global irq13_handler
 .global irq14_handler
@@ -20,7 +22,7 @@ interrupt_handler:
         iret
 
 # timer
-irq0_handler:
+pic0_handler:
 #        pushl $timer
 #        call printk
 #        addl $4, %esp
@@ -30,14 +32,34 @@ irq0_handler:
         iret
         
 # kbd
-irq1_handler:
+pic1_handler:
         xor %eax, %eax
         inb $0x60, %al
         pushl %eax
         pushl $keypressed
         call printk
         addl $8, %esp
-        pushl $0
+        pushl $1
+        call pic_send_eoi
+        addl $4, %esp
+        iret
+
+# primary ATA
+pic14_handler:
+        pushl $ata1
+        call printk
+        addl $4, %esp
+        pushl $14
+        call pic_send_eoi
+        addl $4, %esp
+        iret
+
+# secondary ATA
+pic15_handler:
+        pushl $ata2
+        call printk
+        addl $4, %esp
+        pushl $15
         call pic_send_eoi
         addl $4, %esp
         iret
@@ -80,4 +102,6 @@ gpf:    .asciz "General Protection Failed"
 pagefault:      .asciz "Page Fault"
 doublefault:      .asciz "Page Fault"
 syscall:        .asciz "Syscall!"
+ata1:   .asciz "Primary ATA"
+ata2:   .asciz "Secondary ATA"
 

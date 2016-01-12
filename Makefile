@@ -23,14 +23,15 @@ ISO_ROOT ?= isoroot
 ISO ?= kernel.iso
 OUTPUT_DIR ?= $(ISO_ROOT)/boot
 KERNEL ?= $(OUTPUT_DIR)/kernel.bin
+DISK ?= hda.bin
 
-SUBMODULES ?= boot kernel tty libc
+SUBMODULES ?= boot kernel tty libc ata
 GRUB_CONF ?= config/grub.cfg
 
 OBJ = $(foreach DIR, $(SUBMODULES), $(DIR)/$(DIR).a)
 
 run: $(ISO)
-	$(QEMU) $(QEMUFLAGS) -cdrom $(ISO)
+	$(QEMU) $(QEMUFLAGS) -cdrom $(ISO) -hda $(DISK)
 
 $(ISO): $(KERNEL)
 	-mkdir -p $(OUTPUT_DIR)/grub
