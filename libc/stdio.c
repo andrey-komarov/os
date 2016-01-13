@@ -86,6 +86,12 @@ int vsprintf(char *str, const char *format, va_list args)
 	      str = uitoa(str, arg, 10);
 	      format += 2;
 	    }
+	  else if (modifier == 'x')
+	    {
+	      unsigned arg = va_arg(args, unsigned);
+	      str = uitoa(str, arg, 16);
+	      format += 2;
+	    }
 	  else if (modifier == 's')
 	    {
 	      char* arg = va_arg(args, char*);

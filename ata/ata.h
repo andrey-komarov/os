@@ -15,14 +15,14 @@
 
 // Registers
 #define ATA_RG_DATA 0
-#define ATA_RG_SEC_COUNT 1
-#define ATA_RG_SEC_NUM 2
+#define ATA_RG_SEC_COUNT 2
 #define ATA_RG_LBALO 3
 #define ATA_RG_LBAMID 4
 #define ATA_RG_LBAHI 5
 #define ATA_RG_DRIVE 6
 #define ATA_RG_CMD 7
 #define ATA_RG_STATUS 7
+#define ATA_RG_CONTROL 0x206
 
 // Status byte
 #define ATA_ST_ERR (1 << 0)
@@ -36,6 +36,7 @@
 #define ATA_CMD_IDENTIFY 0xec
 // Flush caches
 #define ATA_CMD_FLUSH 0xe7
+#define ATA_CMD_READ 0x20
 
 // Floating Bus, no drive connected
 #define ATA_ST_FLT 0xff
@@ -45,5 +46,7 @@ typedef struct ata_identify_t
   uint16_t values[256];
 } ata_identify_t;
 
+void init_ata();
 void ata_identify();
+void ata_read(int lba28, uint16_t *buf);
 #endif // _ATA_H

@@ -44,6 +44,7 @@ void kernel_main(unsigned long magic, multiboot_info_t *mbi)
   init_gdt();
   init_interrupts();
   pic_remap(PIC1, PIC2);
+  init_ata();
   enable_interrupts();
   
   /*
@@ -54,7 +55,11 @@ void kernel_main(unsigned long magic, multiboot_info_t *mbi)
   printk("o/");
   
   //test_userspace();
-  identify();
+  ata_identify();
+  uint16_t buf[256];
+  ata_read(0, buf);
+  printk("%s", buf);
+    
   
   while (1)
     {
