@@ -36,8 +36,8 @@ void init_interrupts()
         
   isr_init(&idt[PIC1 + PIC_TIMER], (uint32_t)pic0_handler, 0);
   isr_init(&idt[PIC1 + PIC_KBD], (uint32_t)pic1_handler, 0);
-  isr_init(&idt[PIC1 + PIC_ATA1], (uint32_t)pic14_handler, 0);
-  isr_init(&idt[PIC1 + PIC_ATA2], (uint32_t)pic15_handler, 0);
+  isr_init(&idt[PIC2 + PIC_ATA1], (uint32_t)pic14_handler, 0);
+  isr_init(&idt[PIC2 + PIC_ATA2], (uint32_t)pic15_handler, 0);
   isr_init(&idt[INT_DOUBLE_FAULT], (uint32_t)irq8_handler, 0);
   isr_init(&idt[INT_GPF], (uint32_t)irq13_handler, 0);
   isr_init(&idt[INT_PAGE_FAULT], (uint32_t)irq14_handler, 0);

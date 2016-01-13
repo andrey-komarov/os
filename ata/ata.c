@@ -51,11 +51,15 @@ void ata_read(int lba28, uint16_t *buf)
   outb(ATA_BASE1 + ATA_RG_LBAMID, (lba28 >> 8) & 0xff);
   outb(ATA_BASE1 + ATA_RG_LBAHI, (lba28 >> 16) & 0xff);
   outb(ATA_BASE1 + ATA_RG_CMD, ATA_CMD_READ);
-  int status = inb(ATA_BASE1 + ATA_RG_STATUS);
+  int status = inb(ATA_ASP);
   printk("Waiting for IRQ... status = %p", status);
+  int i = 0;
   while (status & ATA_ST_BSY)
-    status = inb(ATA_BASE1 + ATA_RG_STATUS);
-  printk("New status: %p", status);
+    {
+      status = inb(ATA_ASP);
+      i++;
+    }
+  printk("New status: %p, after %d increments", status, i);
   for (int i = 0; i < 256; i++)
     buf[i] = inw(ATA_BASE1 + ATA_RG_DATA);
 }

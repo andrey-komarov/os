@@ -14,8 +14,8 @@
 
 #define PIC_TIMER 0
 #define PIC_KBD 1
-#define PIC_ATA1 14
-#define PIC_ATA2 15
+#define PIC_ATA1 6
+#define PIC_ATA2 7
 
 /* reinitialize the PIC controllers, giving them specified vector offsets
    rather than 8h and 70h, as configured by default */

@@ -102,6 +102,6 @@ gpf:    .asciz "General Protection Failed"
 pagefault:      .asciz "Page Fault"
 doublefault:      .asciz "Page Fault"
 syscall:        .asciz "Syscall!"
-ata1:   .asciz "Primary ATA"
-ata2:   .asciz "Secondary ATA"
+ata1:   .asciz "Primary ATA interrupt"
+ata2:   .asciz "Secondary ATA interrupt"
 
