@@ -7,6 +7,7 @@
 #include "pic.h"
 #include "userspace.h"
 #include "ata/ata.h"
+#include "fs/fs.h"
 
 static char printk_buf[1 << 13];
 int printk(const char* format, ...)
@@ -45,6 +46,8 @@ void kernel_main(unsigned long magic, multiboot_info_t *mbi)
   init_interrupts();
   pic_remap(PIC1, PIC2);
   init_ata();
+  ata_identify();
+  init_fs();
   enable_interrupts();
   
   /*
@@ -55,10 +58,7 @@ void kernel_main(unsigned long magic, multiboot_info_t *mbi)
   printk("o/");
   
   //test_userspace();
-  ata_identify();
-  uint16_t buf[256];
-  ata_read(0, buf);
-  printk("%s", buf);
+  //ata_identify();
     
   
   while (1)

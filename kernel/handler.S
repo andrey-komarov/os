@@ -46,9 +46,12 @@ pic1_handler:
 
 # primary ATA
 pic14_handler:
+        xor %eax, %eax
+        inb $0x3f6, %al
+        pushl %eax
         pushl $ata1
         call printk
-        addl $4, %esp
+        addl $8, %esp
         pushl $14
         call pic_send_eoi
         addl $4, %esp
@@ -102,6 +105,6 @@ gpf:    .asciz "General Protection Failed"
 pagefault:      .asciz "Page Fault"
 doublefault:      .asciz "Page Fault"
 syscall:        .asciz "Syscall!"
-ata1:   .asciz "Primary ATA interrupt"
+ata1:   .asciz "Primary ATA interrupt, status=%x"
 ata2:   .asciz "Secondary ATA interrupt"
 

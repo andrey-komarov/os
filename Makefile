@@ -25,7 +25,7 @@ OUTPUT_DIR ?= $(ISO_ROOT)/boot
 KERNEL ?= $(OUTPUT_DIR)/kernel.bin
 DISK ?= hda.bin
 
-SUBMODULES ?= boot kernel tty libc ata
+SUBMODULES ?= boot kernel tty libc ata fs
 GRUB_CONF ?= config/grub.cfg
 
 OBJ = $(foreach DIR, $(SUBMODULES), $(DIR)/$(DIR).a)

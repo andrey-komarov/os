@@ -43,23 +43,22 @@ void ata_identify()
   printk("%lld LBA48 sectors", sectors48);
 }
 
-void ata_read(int lba28, uint16_t *buf)
+void ata_read(int lba28, int count, uint16_t *buf)
 {
   outb(ATA_BASE1 + ATA_RG_DRIVE, 0xe0 | ((lba28 >> 24) & 0x0f));
-  outb(ATA_BASE1 + ATA_RG_SEC_COUNT, 1);
+  outb(ATA_BASE1 + ATA_RG_SEC_COUNT, count);
   outb(ATA_BASE1 + ATA_RG_LBALO, lba28 & 0xff);
   outb(ATA_BASE1 + ATA_RG_LBAMID, (lba28 >> 8) & 0xff);
   outb(ATA_BASE1 + ATA_RG_LBAHI, (lba28 >> 16) & 0xff);
   outb(ATA_BASE1 + ATA_RG_CMD, ATA_CMD_READ);
-  int status = inb(ATA_ASP);
-  printk("Waiting for IRQ... status = %p", status);
-  int i = 0;
-  while (status & ATA_ST_BSY)
+  for (int i = 0; i < count; i++)
     {
-      status = inb(ATA_ASP);
-      i++;
+      int status = inb(ATA_BASE1 + ATA_RG_CONTROL);
+      printk("Initial status: %x", status);
+      for (int j = 0; j < 5 || (status & ATA_ST_BSY); j++)
+        status = inb(ATA_BASE1 + ATA_RG_CONTROL);
+      printk("New status: %x", status);
+      for (int j = 0; j < 256; j++)
+        buf[i * 256 + j] = inw(ATA_BASE1 + ATA_RG_DATA);
     }
-  printk("New status: %p, after %d increments", status, i);
-  for (int i = 0; i < 256; i++)
-    buf[i] = inw(ATA_BASE1 + ATA_RG_DATA);
 }
