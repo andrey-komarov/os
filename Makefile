@@ -30,7 +30,7 @@ GRUB_CONF ?= config/grub.cfg
 
 OBJ = $(foreach DIR, $(SUBMODULES), $(DIR)/$(DIR).a)
 
-run: $(ISO)
+run: $(ISO) $(DISK)
 	$(QEMU) $(QEMUFLAGS) -cdrom $(ISO) -hda $(DISK)
 
 $(ISO): $(KERNEL)
@@ -41,6 +41,12 @@ $(ISO): $(KERNEL)
 $(KERNEL): $(OBJ)
 	-mkdir -p $(OUTPUT_DIR)
 	$(LD) $(LDFLAGS) $^ $(LIBGCC) -o $@
+
+$(DISK):
+	dd if=/dev/zero of=$(DISK) count=32000
+	mkfs.fat -F 16 $(DISK)
+	echo "Hello FAT" > hello.txt
+	mcopy -i $(DISK) hello.txt ::hello.txt
 
 %.a: FORCE
 	@echo "Building $(shell dirname $@)"
