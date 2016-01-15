@@ -2,17 +2,57 @@
 #include "ata/ata.h"
 #include "kernel/kernel.h"
 #include "libc/assert.h"
+#include "libc/string.h"
 
 static fat16_boot_t boot;
-static uint16_t fat;
-static uint16_t data;
-static uint16_t root_dir_sectors;
-static uint16_t root;
+static uint32_t fat;
+static uint32_t data;
+static uint32_t root_dir_sectors;
+static uint32_t root;
+
+static uint8_t* fat16_decode_name(uint8_t *src, char *dst)
+{
+  memcpy(dst, src, 11);
+  int i = 7;
+  while (i > 0 && dst[i - 1] == ' ')
+    i--;
+  dst[i++] = '.';
+  memcpy(dst + i, src + 8, 3);
+  i += 3;
+  while (dst[i - 1] == ' ')
+    i--;
+  if (dst[i - 1] == '.')
+    i--;
+  dst[i] = 0x00;
+  return dst + i;
+}
+
+#define FILES_PER_SECTOR (2 * ATA_SECTOR_SIZE / sizeof(fat16_dir_entry_t))
 
 void fat16_list_all_files()
 {
-  printk("Not implemented yet");
-
+  for (int i = 0; i < root_dir_sectors; i++)
+    {
+      fat16_dir_entry_t dir[FILES_PER_SECTOR];
+      printk("Reading sector %d", root + i);
+      ata_read_one(root + i, (uint16_t*)dir);
+      for (int j = 0; j < FILES_PER_SECTOR; j++)
+        {
+          if (dir[j].name[0] == 0)
+            {
+              printk("No more files in root dir");
+              return;
+            }
+          if (dir[j].name[0] == 0xe5)
+            {
+              printk("%dth file was deleted", j);
+              continue;
+            }
+          char name[13];
+          fat16_decode_name(dir[j].name, name);
+          printk("File! name: <%s>", name);
+        }
+    }
 }
 
 void fat16_init()

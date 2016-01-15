@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#define ATA_SECTOR_SIZE 256
+
 // Device Control Registers
 #define ATA_DCR 0x3f6
 // Alternate Status Ports
@@ -43,10 +45,11 @@
 
 typedef struct ata_identify_t
 {
-  uint16_t values[256];
+  uint16_t values[ATA_SECTOR_SIZE];
 } ata_identify_t;
 
 void init_ata();
 void ata_identify();
-void ata_read(int lba28, int count, uint16_t *buf);
+void ata_read_one(uint32_t lba28, uint16_t *buf);
+void ata_read(uint32_t lba28, int count, uint16_t *buf);
 #endif // _ATA_H
