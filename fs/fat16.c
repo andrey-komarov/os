@@ -100,6 +100,11 @@ void fat16_list_all_files()
               printk("%dth file was deleted", j);
               continue;
             }
+          if (dir[j].attributes == 0x0f)
+            {
+              printk("This is LFN, skipping");
+              continue;
+            }
           char name[13];
           fat16_decode_name(dir[j].name, name);
           printk("File! name: <%s>", name);
