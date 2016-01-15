@@ -51,7 +51,7 @@ void fat16_cat(fat16_fd_t *fd)
           ata_read_one(lba, (uint16_t*)sect);
           for (int i = 0; i < ATA_SECTOR_SIZE * 2 && size > 0; i++)
             {
-              tty_putchar(sect[i]);
+              //tty_putchar(sect[i]);
               sum += sect[i];
               size--;
             }

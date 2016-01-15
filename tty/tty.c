@@ -53,7 +53,7 @@ void tty_putchar(char ch)
       column = 0;
       if (++row == ROWS)
         row = 0;
-      for (int i = 0; i < COLUMNS; i++)
+      for (size_t i = 0; i < COLUMNS; i++)
         tty_put(' ', default_color, row, i);
       return;
     }
