@@ -8,6 +8,7 @@
 #include "userspace.h"
 #include "ata/ata.h"
 #include "fs/fs.h"
+#include "fs/fat16.h"
 
 static char printk_buf[1 << 13];
 int printk(const char* format, ...)
@@ -56,6 +57,7 @@ void kernel_main(unsigned long magic, multiboot_info_t *mbi)
   */
   
   printk("o/");
+  fat16_list_all_files();
   
   //test_userspace();
   //ata_identify();
