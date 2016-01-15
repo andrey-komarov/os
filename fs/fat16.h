@@ -53,6 +53,12 @@ typedef struct fat16_dir_entry
   uint32_t file_size;
 } __attribute__((packed)) fat16_dir_entry_t;
 
+typedef struct fat16_fd
+{
+  uint16_t cluster;
+  uint32_t file_size;
+} fat16_fd_t;
+
 void fat16_init();
 
 void fat16_list_all_files();

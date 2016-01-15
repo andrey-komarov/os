@@ -10,7 +10,7 @@ export AS = $(TARGET)-as
 export LD=$(TARGET)-ld
 export LDFLAGS=-lgcc
 
-all: hello argv
+all: hello argv checksum
 
 hello: hello.o
 	$(LD) $< -o $@
@@ -19,6 +19,9 @@ hello.o: hello.S
 	$(AS) $< -o $@
 
 argv: argv.o
+	$(LD) $< ../stdlib/stdlib.a $(LIBGCC) -o $@
+
+checksum: checksum.o
 	$(LD) $< ../stdlib/stdlib.a $(LIBGCC) -o $@
 
 clean:

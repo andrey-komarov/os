@@ -7,6 +7,16 @@ static const size_t COLUMNS = 80;
 
 static size_t row, column;
 static uint8_t color;
+static uint8_t default_color;
+static uint16_t empty;
+
+void init_tty()
+{
+  default_color = tty_make_color(COLOR_LIGHT_GREY, COLOR_BLACK);
+  color = default_color;
+  empty = tty_make_entry(' ', color);
+  tty_cls();
+}
 
 uint8_t tty_make_color(enum vga_color fg, enum vga_color bg)
 {
@@ -43,6 +53,8 @@ void tty_putchar(char ch)
       column = 0;
       if (++row == ROWS)
         row = 0;
+      for (int i = 0; i < COLUMNS; i++)
+        tty_put(' ', default_color, row, i);
       return;
     }
   tty_put(ch, color, row, column);

@@ -25,7 +25,7 @@ int printk(const char* format, ...)
 
 void kernel_main(unsigned long magic, multiboot_info_t *mbi)
 {
-  tty_cls();
+  init_tty();
   printk("Hello kernel!");
   
   if (magic != MULTIBOOT_BOOTLOADER_MAGIC)

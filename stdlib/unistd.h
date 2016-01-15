@@ -13,6 +13,8 @@
 
 void _exit(int status) __attribute__((noreturn));
 
+int32_t read(int fd, void *buf, size_t count);
+
 int32_t write(int fd, const void *buf, size_t count);
 
 #define O_RDONLY 0

@@ -36,4 +36,6 @@ void tty_putchar(char);
 
 void tty_putstr(char*);
 
+void init_tty();
+
 #endif // _TTY_H

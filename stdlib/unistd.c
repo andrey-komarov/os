@@ -7,6 +7,11 @@ void _exit(int status)
   __builtin_unreachable();
 }
 
+int32_t read(int fd, void *buf, size_t count)
+{
+  return (int32_t)syscall3(SYS_READ, (uint32_t)fd, (uint32_t)buf, (uint32_t)count);
+}
+
 int32_t write(int fd, const void *buf, size_t count)
 {
   return (int32_t)syscall3(SYS_WRITE, (uint32_t)fd, (uint32_t)buf, (uint32_t)count);
