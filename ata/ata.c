@@ -67,10 +67,8 @@ void ata_read_one(uint32_t lba28, uint16_t *buf)
       outb(ATA_BASE1 + ATA_RG_LBAHI, (lba28 >> 16) & 0xff);
       outb(ATA_BASE1 + ATA_RG_CMD, ATA_CMD_READ);
       int status = inb(ATA_BASE1 + ATA_RG_CONTROL);
-      printk("Initial status: %x", status);
       for (int i = 0; i < 5 || (status & ATA_ST_BSY); i++)
         status = inb(ATA_BASE1 + ATA_RG_CONTROL);
-      printk("New status: %x", status);
       for (int i = 0; i < ATA_SECTOR_SIZE; i++)
         cache[bucket].values[i] = inw(ATA_BASE1 + ATA_RG_DATA);
       cache[bucket].lba = lba28;

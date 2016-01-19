@@ -11,6 +11,7 @@
 .global irq128_handler
 .extern printk
 .extern pic_send_eoi
+.extern run_panic
 
 interrupt_handler:
         pushl %esp
@@ -92,6 +93,7 @@ irq14_handler:
 irq128_handler:
         pushl $syscall
         call printk
+        call run_panic
         addl $4, %esp
         iret
 .section .data

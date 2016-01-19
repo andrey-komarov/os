@@ -30,7 +30,6 @@ uint16_t fat16_next(uint16_t cluster)
       uint16_t sect[ATA_SECTOR_SIZE];
       ata_read_one(lba, sect);
       cache[bucket].cur = cluster;
-      printk("Next addr = %x, lba=%d", addr, lba);
       cache[bucket].next = sect[addr % ATA_SECTOR_SIZE / 2];
     }
   return cache[bucket].next;
@@ -51,11 +50,9 @@ void fat16_cat(fat16_fd_t *fd)
           ata_read_one(lba, (uint16_t*)sect);
           for (int i = 0; i < ATA_SECTOR_SIZE * 2 && size > 0; i++)
             {
-              //tty_putchar(sect[i]);
               sum += sect[i];
               size--;
             }
-          //printk("One more sector");
         }
       cluster = fat16_next(cluster);
     }
@@ -86,7 +83,6 @@ void fat16_list_all_files()
   for (uint32_t i = 0; i < root_dir_sectors; i++)
     {
       fat16_dir_entry_t dir[FILES_PER_SECTOR];
-      printk("Reading sector %d", root + i);
       ata_read_one(root + i, (uint16_t*)dir);
       for (uint32_t j = 0; j < FILES_PER_SECTOR; j++)
         {
