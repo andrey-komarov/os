@@ -79,6 +79,7 @@ irq8_handler:
 irq13_handler:
         pushl $gpf
         call printk
+        call run_panic
         addl $4, %esp
         iret
 

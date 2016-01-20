@@ -13,9 +13,9 @@ void test_userspace()
   bootp_page_dir[((uint32_t)0x80000000) >> 22] = 
     0x400000 | PD_PRESENT | PD_RW | PD_HUGE | PD_USER;
   int i;
-  for (i = 0; i < 100000; i++)
+  for (i = 0; i < 100; i++)
     *(unsigned char*)(0x80000000 + i) = 0x90;
-  *(unsigned char*)0x80001488 = 0xFA;
+  *(unsigned char*)0x80000010 = 0xFA;
   __asm volatile(
     "movw %0, %%ax\n\t"
     "movw %%ax, %%ds\n\t"

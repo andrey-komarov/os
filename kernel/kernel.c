@@ -57,7 +57,11 @@ void kernel_main(unsigned long magic, multiboot_info_t *mbi)
   */
   
   printk("o/");
-  fat16_list_all_files();
+  //fat16_list_all_files();
+  
+  fat16_fd_t fd;
+  if (fat16_open("/HELLO.TXT", &fd) == NULL)
+    panic("Failed to open");
   
   //test_userspace();
   //ata_identify();

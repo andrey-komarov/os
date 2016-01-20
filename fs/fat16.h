@@ -61,6 +61,8 @@ typedef struct fat16_fd
 
 void fat16_init();
 
+fat16_fd_t *fat16_open(char *path, fat16_fd_t *fd);
+
 void fat16_list_all_files();
 
 #endif // _FAT16_H

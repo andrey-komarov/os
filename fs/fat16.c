@@ -59,7 +59,7 @@ void fat16_cat(fat16_fd_t *fd)
   printk("Cat done, checksum = %d", sum);
 }
 
-static char* fat16_decode_name(uint8_t *src, char *dst)
+static char* fat16_decode_name(char *dst, uint8_t *src)
 {
   memcpy(dst, src, 11);
   int i = 7;
@@ -102,7 +102,7 @@ void fat16_list_all_files()
               continue;
             }
           char name[13];
-          fat16_decode_name(dir[j].name, name);
+          fat16_decode_name(name, dir[j].name);
           printk("File! name: <%s>", name);
           if (!(dir[j].attributes & FAT_ATTR_DIR))
             {
@@ -130,4 +130,57 @@ void fat16_init()
   printk("fat = %d, root = %d, data = %d", fat, root, data);
   for (int i = 0; i < FAT_CACHE_SIZE; i++)
     cache[i].cur = 0xffff;
+}
+
+static char *first_path_part(char* dest, char *path)
+{
+  while (*path == '/' && *path != 0)
+    path++;
+  if (*path == 0)
+    return NULL;
+  while (*path != '/' && *path != 0)
+    *dest++ = *path++;
+  *dest = 0;
+  return path;
+}
+
+static fat16_dir_entry_t *find_file_in_root_dir(char *name, fat16_dir_entry_t *ent)
+{
+  for (uint32_t i = 0; i < root_dir_sectors; i++)
+    {
+      fat16_dir_entry_t dir[FILES_PER_SECTOR];
+      ata_read_one(root + i, (uint16_t*)dir);
+      for (uint32_t j = 0; j < FILES_PER_SECTOR; j++)
+        {
+          if (dir[j].name[0] == 0)
+            return NULL;
+          if (dir[j].name[0] == 0xe5)
+            continue;
+          if (dir[j].attributes == 0x0f) // LFN entry, skip
+            continue;
+          char name_here[13];
+          fat16_decode_name(name_here, dir[j].name);
+          if (!strcmp(name, name_here))
+            {
+              memcpy(ent, &dir[j], sizeof(*ent));
+              return ent;
+            }
+        }
+    }
+}
+
+fat16_fd_t *fat16_open(char *path, fat16_fd_t *fd)
+{
+  printk("Path: <%s>", path);
+  char name[13];
+  char *p = first_path_part(name, path);
+  fat16_dir_entry_t ent;
+  if (find_file_in_root_dir(name, &ent) == NULL)
+    return NULL;
+  if (first_path_part(name, p) != NULL)
+    panic("Nested directories are not supported yet :(");
+  fd->cluster = ent.first_cluster_low;
+  fd->file_size = ent.file_size;
+  printk("Open success");
+  return fd;
 }

@@ -23,3 +23,13 @@ char *strcpy(char *dest, const char *src)
     dest[i] = src[i];
   return dest;
 }
+
+int strcmp(char *s1, char *s2) // maybe doesn't work for chars >127
+{
+  while (*s1 == *s2 && *s1 != 0 && *s2 != 0)
+    {
+      s1++;
+      s2++;
+    }
+  return *s1 - *s2;
+}
