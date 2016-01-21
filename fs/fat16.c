@@ -184,3 +184,39 @@ fat16_fd_t *fat16_open(char *path, fat16_fd_t *fd)
   printk("Open success");
   return fd;
 }
+
+#define min(a, b) ((a) < (b) ? (a) : (b))
+
+int fat16_read(fat16_fd_t *fd, uint8_t *dst, uint32_t offset, uint32_t length)
+{
+  uint32_t cluster = fd->cluster;
+  uint32_t size = fd->file_size;
+
+  if (offset > size || offset + length > size)
+    return EFAULT;
+
+  uint32_t length2 = length;
+  while (length > 0)
+    {
+      for (int s = 0; s < boot.sectors_per_cluster && length > 0; s++)
+        {
+          if (offset >= ATA_SECTOR_SIZE * 2)
+            {
+              offset -= ATA_SECTOR_SIZE * 2;
+            }
+          else
+            {
+              uint32_t right = min(offset + length, ATA_SECTOR_SIZE * 2);
+              uint8_t sect[ATA_SECTOR_SIZE * 2];
+              uint32_t lba = data + (cluster - 2) * boot.sectors_per_cluster + s;
+              ata_read_one(lba, (uint16_t*)sect);
+              memcpy(dst, sect + offset, right - offset);
+              dst += right - offset;
+              length -= right - offset;
+              offset = 0;
+            }
+        }
+      cluster = fat16_next(cluster);
+    }
+  return length2;
+}

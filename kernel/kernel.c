@@ -62,6 +62,11 @@ void kernel_main(unsigned long magic, multiboot_info_t *mbi)
   fat16_fd_t fd;
   if (fat16_open("/HELLO.TXT", &fd) == NULL)
     panic("Failed to open");
+  uint8_t buf[4096];
+  int r = fat16_read(&fd, buf, 0, fd.file_size);
+  if (r < 0)
+    panic("Failed to read");
+  printk("%s", buf);
   
   //test_userspace();
   //ata_identify();
