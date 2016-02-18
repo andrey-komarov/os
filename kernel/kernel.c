@@ -9,6 +9,9 @@
 #include "ata/ata.h"
 #include "fs/fs.h"
 #include "fs/fat16.h"
+#include "mem/kpmalloc.h"
+
+extern char end_of_kernel;
 
 static char printk_buf[1 << 13];
 int printk(const char* format, ...)
@@ -43,12 +46,14 @@ void kernel_main(unsigned long magic, multiboot_info_t *mbi)
          mbi->u.elf_sec.shndx);
   
   disable_interrupts();
+  init_mem(mbi->mem_upper);
   init_gdt();
   init_interrupts();
   pic_remap(PIC1, PIC2);
   init_ata();
   ata_identify();
   init_fs();
+  init_vmem();
   enable_interrupts();
   
   /*
@@ -67,6 +72,7 @@ void kernel_main(unsigned long magic, multiboot_info_t *mbi)
   if (r < 0)
     panic("Failed to read");
   printk("%s", buf);
+  printk("EOK = %p, kernel size = %d bytes", &end_of_kernel, &end_of_kernel - (char*)0xc0100000);
   
   //test_userspace();
   //ata_identify();

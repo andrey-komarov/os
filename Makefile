@@ -16,7 +16,7 @@ export AR = $(TARGET)-ar
 export ARFLAGS = rcs
 
 QEMU ?= qemu-system-i386
-QEMUFLAGS ?= -m 4 -boot d
+QEMUFLAGS ?= -m 256 -boot d
 
 GRUB_MKRESCUE ?= grub-mkrescue
 ISO_ROOT ?= isoroot
@@ -25,7 +25,7 @@ OUTPUT_DIR ?= $(ISO_ROOT)/boot
 KERNEL ?= $(OUTPUT_DIR)/kernel.bin
 DISK ?= hda.bin
 
-SUBMODULES ?= boot kernel tty libc ata fs
+SUBMODULES ?= boot kernel tty libc ata fs mem
 GRUB_CONF ?= config/grub.cfg
 
 OBJ = $(foreach DIR, $(SUBMODULES), $(DIR)/$(DIR).a)

@@ -167,6 +167,7 @@ static fat16_dir_entry_t *find_file_in_root_dir(char *name, fat16_dir_entry_t *e
             }
         }
     }
+  return NULL;
 }
 
 fat16_fd_t *fat16_open(char *path, fat16_fd_t *fd)
