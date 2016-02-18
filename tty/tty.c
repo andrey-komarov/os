@@ -1,7 +1,7 @@
 #include "tty/tty.h"
 #include "libc/string.h"
 
-static uint16_t* const VIDEO = (uint16_t*)0xB8000;
+static uint16_t* const VIDEO = (uint16_t*)(0xB8000 + 0xC0000000);
 static const size_t ROWS = 25;
 static const size_t COLUMNS = 80;
 

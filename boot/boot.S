@@ -34,6 +34,10 @@ _start:
 
 	movl $stack_top, %esp
 
+        push $.Ljmp_to_highmem
+        ret
+.Ljmp_to_highmem:
+
         # Multiboot information structure
         pushl %ebx
         # magic

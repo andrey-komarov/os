@@ -36,7 +36,6 @@ void init_vmem()
           (*table)[page] = PT_PRESENT | PT_RW | phy_addr;
         }
     }
-  kernel_page_dir[0] = kernel_page_dir[KERNEL_FIRST_DIR_ENTRY];
   printk("Setting new page dir...");
   set_page_dir(kernel_page_dir_phy);
   printk("New page dir successfully set!");
