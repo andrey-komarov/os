@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #define PAGE_SIZE 4096
+#define PAGE_BITS 12
 
 #define PAGE_TABLE_BITS 10
 #define PAGE_TABLE_SIZE 1024
@@ -25,5 +26,7 @@ typedef uint32_t pagetable_t[PAGE_TABLE_SIZE] __attribute__((aligned(PAGE_SIZE))
 extern pagedir_t bootp_page_dir;
 
 void set_page_dir(pagedir_t *pagedir);
+
+void* virt_to_phy(void* addr);
 
 #endif // _MMU_H

@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#define KERNEL_VMA 0xc0100000
+#define KERNEL_VMA 0xc0000000
 #define PAGE_SIZE 4096
 #define PAGE_BITS 12
 
