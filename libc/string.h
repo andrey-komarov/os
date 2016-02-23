@@ -11,4 +11,6 @@ char *strcpy(char *dest, const char *src);
 
 int strcmp(char *s1, char *s2);
 
+void *memset(void *s, int c, size_t n);
+
 #endif // _STRING_H

@@ -1,6 +1,7 @@
 #include "mem.h"
 #include "libc/assert.h"
 #include "libc/panic.h"
+#include "libc/bitset.h"
 
 #include <stddef.h>
 

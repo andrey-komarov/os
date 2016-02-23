@@ -2,6 +2,7 @@
 #include "mem.h"
 #include "kernel/mmu.h"
 #include "kernel/kernel.h"
+#include "libc/bitset.h"
 
 #include <stdint.h>
 
@@ -9,7 +10,7 @@
 #define RESERVED_TABLES (KERNELSPACE_PAGES >> PAGE_DIR_BITS)
 #define KERNEL_FIRST_DIR_ENTRY (KERNEL_VMA >> (PAGE_BITS + PAGE_TABLE_BITS))
 
-uint32_t kernel_pages_map[KERNELSPACE_PAGES / 32];
+//BITSET(kernel_pages_map, KERNELSPACE_PAGES);
 
 pagedir_t kernel_page_dir;
 pagetable_t kernel_page_tables[RESERVED_TABLES];
@@ -18,11 +19,7 @@ pagedir_t *kernel_page_dir_phy = (pagedir_t*)((uint32_t)&kernel_page_dir - KERNE
 void init_vmem()
 {
   int last_kernel_page = (uint32_t)(&end_of_kernel - KERNEL_VMA) / PAGE_SIZE;
-  printk("Initializing %d initial kernel pages", last_kernel_page + 1);
-  printk("%d kernelspace pages", KERNELSPACE_PAGES);
   int last_kernel_pagedir_entry = last_kernel_page >> PAGE_TABLE_BITS;
-  printk("KERNEL_FIRST_DIR_ENTRY = %d", KERNEL_FIRST_DIR_ENTRY);
-  printk("last_kernel_pagedir_entry = %d", last_kernel_page);
   for (int pd_entry = 0; pd_entry <= last_kernel_pagedir_entry; pd_entry++)
     {
       int pd_index = KERNEL_FIRST_DIR_ENTRY + pd_entry;
@@ -36,9 +33,11 @@ void init_vmem()
           (*table)[page] = PT_PRESENT | PT_RW | phy_addr;
         }
     }
-  printk("Setting new page dir...");
+  /*
+  for (int i = 0; i <= last_kernel_page; i++)
+    bitset_set(kernel_pages_map, i, 1);
+  */
   set_page_dir(kernel_page_dir_phy);
-  printk("New page dir successfully set!");
 }
 
 void* kpmalloc(size_t pages);

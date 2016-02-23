@@ -33,3 +33,10 @@ int strcmp(char *s1, char *s2) // maybe doesn't work for chars >127
     }
   return *s1 - *s2;
 }
+
+void *memset(void *s, int c, size_t n)
+{
+  for (size_t i = 0; i < n; i++)
+    ((char*)s)[i] = c;
+  return s;
+}
