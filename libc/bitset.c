@@ -2,23 +2,25 @@
 
 #include "string.h"
 
-int bitset_init(bitset_t *bitset, size_t bytes)
+int bitset_init(void *bitset, size_t bytes)
 {
-  bitset->size = (bytes + 3) / 4;
-  bitset->hint = 0;
-  memset(bitset->data, 0, bytes);
-  return 1;
+  memset(bitset, 0, bytes);
+  return 0;
 }
 
-int bitset_get(bitset_t *bitset, size_t pos)
-{
-  return !!(bitset->data[pos / BITSET_WIDTH] & (1 << (pos % BITSET_WIDTH)));
-}
-
-void bitset_set(bitset_t *bitset, size_t pos, int newval)
+int bitset_get(void *bitset, size_t pos)
 {
   int bucket = pos / BITSET_WIDTH;
   int bit = pos % BITSET_WIDTH;
-  bitset->data[bucket] &= ~(1 << bit);
-  bitset->data[bucket] |= newval << bit;
+  uint32_t *data = (uint32_t*)bitset;
+  return !!(data[bucket] & (1 << bit));
+}
+
+void bitset_set(void *bitset, size_t pos, int newval)
+{
+  int bucket = pos / BITSET_WIDTH;
+  int bit = pos % BITSET_WIDTH;
+  uint32_t *data = (uint32_t*)bitset;
+  data[bucket] &= ~(1 << bit);
+  data[bucket] |= newval << bit;
 }

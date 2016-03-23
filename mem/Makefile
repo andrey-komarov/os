@@ -1,5 +1,5 @@
 OUTPUT = mem.a
-OBJ = mem.o kpmalloc.o
+OBJ = mem.o kpmalloc.o context.o
 
 all: $(OUTPUT)
 

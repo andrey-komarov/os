@@ -25,7 +25,7 @@ OUTPUT_DIR ?= $(ISO_ROOT)/boot
 KERNEL ?= $(OUTPUT_DIR)/kernel.bin
 DISK ?= hda.bin
 
-SUBMODULES ?= boot kernel tty libc ata fs mem
+SUBMODULES ?= boot mem kernel tty ata fs libc
 GRUB_CONF ?= config/grub.cfg
 
 OBJ = $(foreach DIR, $(SUBMODULES), $(DIR)/$(DIR).a)
@@ -40,7 +40,7 @@ $(ISO): $(KERNEL)
 
 $(KERNEL): $(OBJ)
 	-mkdir -p $(OUTPUT_DIR)
-	$(LD) $(LDFLAGS) $^ $(LIBGCC) -o $@
+	$(LD) $(LDFLAGS) -\( $^ -\) $(LIBGCC) -o $@
 
 $(DISK):
 	dd if=/dev/zero of=$(DISK) count=32000

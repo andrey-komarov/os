@@ -9,7 +9,7 @@ pagedir_t bootp_page_dir = {
   [0xc0000000 >> 22] = PD_PRESENT | PD_RW | PD_HUGE,
 };
 
-static pagedir_t *current_pagedir = &bootp_page_dir;
+pagedir_t *current_pagedir = &bootp_page_dir;
 
 void set_page_dir(pagedir_t *pagedir)
 {
