@@ -76,7 +76,7 @@ void kernel_main(unsigned long magic, multiboot_info_t *mbi)
   printk("EOK = %p, kernel size = %d bytes", &end_of_kernel, &end_of_kernel - (char*)0xc0100000);
 
   pagedir_t *ctx = context_new();
-  printk("New context at %p\n", ctx);
+  printk("New context at %p\n", *ctx);
   context_init_kernel_pages(ctx);
   //set_page_dir(ctx);
   //test_userspace();

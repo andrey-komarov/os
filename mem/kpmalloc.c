@@ -22,7 +22,7 @@ void init_vmem()
 {
   int last_kernel_page = (uint32_t)(&end_of_kernel - KERNEL_VMA) / PAGE_SIZE;
   int last_kernel_pagedir_entry = last_kernel_page >> PAGE_TABLE_BITS;
-  for (int pd_entry = 0; pd_entry <= RESERVED_TABLES; pd_entry++)
+  for (int pd_entry = 0; pd_entry < RESERVED_TABLES; pd_entry++)
     {
       int pd_index = KERNEL_FIRST_DIR_ENTRY + pd_entry;
       pagetable_t *phytable = virt_to_phy(&kernel_page_tables[pd_entry]);
@@ -37,7 +37,7 @@ void init_vmem()
     }
   for (int i = 0; i <= last_kernel_page; i++)
     bitset_set(kernel_pages_map, i, 1);
-  set_page_dir(kernel_page_dir_phy);
+  set_page_dir(kernel_page_dir);
 }
 
 static uint32_t find_free_consecutive_single(size_t pages, size_t guess)
@@ -89,6 +89,7 @@ void* kpmalloc(size_t pages)
       bitset_set(kernel_pages_map, pageno, 1);
       size_t tableno = pageno / PAGE_TABLE_SIZE;
       uint32_t phypage = (uint32_t)phymem_alloc_page();
+      printk("pageno = %d tableno = %d phypage = %p", pageno, tableno, phypage);
       uint32_t *p = &kernel_page_tables[tableno][pageno % PAGE_TABLE_SIZE];
       assert(!(*p & PT_PRESENT));
       *p = phypage | PT_PRESENT | PT_RW;
@@ -100,6 +101,7 @@ void kpfree1(void *addr)
 {
   uint32_t page = (uint32_t)addr;
   bitset_set(kernel_pages_map, page / PAGE_SIZE, 0);
+  // TODO выпилить из kernel_page_tables
   phymem_free_page(virt_to_phy(addr));
 }
 

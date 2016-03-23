@@ -26,7 +26,7 @@ typedef uint32_t pagedir_t[PAGE_DIR_SIZE] __attribute__((aligned(PAGE_SIZE)));
 typedef uint32_t pagetable_t[PAGE_TABLE_SIZE] __attribute__((aligned(PAGE_SIZE)));
 
 extern pagedir_t bootp_page_dir;
-extern pagedir_t *current_pagedir;
+extern pagedir_t *virt_current_pagedir;
 
 void set_page_dir(pagedir_t *pagedir);
 
