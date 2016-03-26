@@ -37,7 +37,7 @@ void init_vmem()
     }
   for (int i = 0; i <= last_kernel_page; i++)
     bitset_set(kernel_pages_map, i, 1);
-  set_page_dir(kernel_page_dir);
+  set_page_dir_rewrite_kernel(kernel_page_dir);
 }
 
 static uint32_t find_free_consecutive_single(size_t pages, size_t guess)

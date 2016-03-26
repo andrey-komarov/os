@@ -10,13 +10,8 @@ pagedir_t *context_new()
 
 void context_init_kernel_pages(pagedir_t *context)
 {
-  printk("USER_PAGE_TABLES = %d", USER_PAGE_TABLES);
-  for (int ptno = 0; ptno < USER_PAGE_TABLES; ptno++)
+  for (int ptno = 0; ptno < PAGE_DIR_SIZE; ptno++)
     (*context)[ptno] = 0;
-  printk("cur page dir = %p", *virt_current_pagedir);
-  for (int ptno = USER_PAGE_TABLES; ptno < PAGE_DIR_SIZE; ptno++)
-    (*context)[ptno] = (*virt_current_pagedir)[ptno];
-  printk("done");
 }
 
 void context_free(pagedir_t *context)

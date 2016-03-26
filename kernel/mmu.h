@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include "mem/mem.h"
+
 #define PAGE_SIZE 4096
 #define PAGE_BITS 12
 
@@ -29,6 +31,7 @@ extern pagedir_t bootp_page_dir;
 extern pagedir_t *virt_current_pagedir;
 
 void set_page_dir(pagedir_t *pagedir);
+void set_page_dir_rewrite_kernel(pagedir_t *pagedir);
 
 void* virt_to_phy(void* addr);
 
