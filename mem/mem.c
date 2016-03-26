@@ -22,15 +22,16 @@ void init_mem(uint32_t mem_upper)
 
 void *phymem_alloc_page()
 {
-  for (;bitset_get(bitmap, guess) ; guess = (guess + 1) % total_pages)
-    ;
+  for (size_t step = 0;bitset_get(bitmap, guess) ; guess = (guess + 1) % total_pages, step++)
+    if (step > total_pages)
+      panic("Out of memory");
   bitset_set(bitmap, guess, 1);
   return (void*)(guess * PAGE_SIZE);
 }
 
 void phymem_free_page(void *page)
 {
-  printk("phy free %p", page);
+  //printk("phy free %p", page);
   assert(((uint32_t)page) % PAGE_SIZE == 0);
   uint32_t pageno = ((uint32_t)page) / PAGE_SIZE;
   assert(bitset_get(bitmap, pageno));

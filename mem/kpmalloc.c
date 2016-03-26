@@ -17,9 +17,9 @@ void init_vmem()
 {
   int last_kernel_page = (uint32_t)(&end_of_kernel - KERNEL_VMA) / PAGE_SIZE;
   int last_kernel_pagedir_entry = last_kernel_page >> PAGE_TABLE_BITS;
-  for (int pd_entry = 0; pd_entry < RESERVED_TABLES; pd_entry++)
+  for (size_t pd_entry = 0; pd_entry < RESERVED_TABLES; pd_entry++)
     {
-      int pd_index = KERNEL_FIRST_DIR_ENTRY + pd_entry;
+      size_t pd_index = KERNEL_FIRST_DIR_ENTRY + pd_entry;
       pagetable_t *phytable = virt_to_phy(&kernel_page_tables[pd_entry]);
       kernel_page_dir[pd_index]
         = PD_PRESENT | PD_RW | (uint32_t)phytable;
@@ -37,7 +37,7 @@ void init_vmem()
 
 static uint32_t find_free_consecutive_single(size_t pages, size_t guess)
 {
-  int found = 0;
+  size_t found = 0;
   while (guess < KERNELSPACE_PAGES)
     {
       while (found < pages && guess < KERNELSPACE_PAGES && !bitset_get(kernel_pages_map, guess))
@@ -77,7 +77,7 @@ static uint32_t find_free_consecutive(size_t pages)
 void* kpmalloc(size_t pages)
 {
   uint32_t first = find_free_consecutive(pages);
-  for (int i = 0; i < pages; i++)
+  for (size_t i = 0; i < pages; i++)
     {
       size_t pageno = first + i;
       bitset_set(kernel_pages_map, pageno, 1);
@@ -101,7 +101,7 @@ void kpfree1(void *addr)
 void kpfree(void *addr, size_t pages)
 {
   uint32_t page = (uint32_t)addr;
-  for (int i = 0; i < pages; i++)
+  for (size_t i = 0; i < pages; i++)
     {
       kpfree1((void*)page);
       page += PAGE_SIZE;
