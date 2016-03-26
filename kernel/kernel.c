@@ -75,22 +75,15 @@ void kernel_main(unsigned long magic, multiboot_info_t *mbi)
   printk("%s", buf);
   printk("EOK = %p, kernel size = %d bytes", &end_of_kernel, &end_of_kernel - (char*)0xc0100000);
 
-  pagedir_t *ctx = context_new();
-  printk("New context at %p\n", *ctx);
-  set_page_dir(ctx);
-  pagedir_t *ctx2 = context_new();
-  context_clone_present(ctx2, ctx);
-  set_page_dir(ctx2);
-  context_free(ctx);
+  //pagedir_t *ctx = context_new();
+  //printk("New context at %p\n", *ctx);
+  //set_page_dir(ctx);
+  //pagedir_t *ctx2 = context_new();
+  //context_clone_present(ctx2, ctx);
+  //set_page_dir(ctx2);
+  //context_free(ctx);
   //printk("New context at %p\n", *ctx2);
 
-  for (int i = 0; i < 1000000; i++)
-    {
-      void *x = kpmalloc(100);
-      //printk("x = %p", x);
-      kpfree(x, 100);
-
-    }
   printk("survived");
   
 
