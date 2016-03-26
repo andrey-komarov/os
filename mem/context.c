@@ -17,7 +17,7 @@ void context_clone_present(pagedir_t *dst, pagedir_t *src)
   for (size_t ptno = 0; ptno < USER_PAGE_TABLES; ptno++)
     {
       uint32_t pt = (*src)[ptno];
-      if (!(pt | PD_PRESENT))
+      if (!(pt & PD_PRESENT))
 	{
 	  (*dst)[ptno] = 0;
 	  continue;
@@ -29,7 +29,7 @@ void context_clone_present(pagedir_t *dst, pagedir_t *src)
       for (int i = 0; i < PAGE_TABLE_SIZE; i++)
 	{
 	  uint32_t pt_entry = buf[i];
-	  if (!(pt_entry | PT_PRESENT))
+	  if (!(pt_entry & PT_PRESENT))
 	    {
 	      virt_newpt[i] = 0;
 	      continue;
@@ -48,11 +48,10 @@ void context_clone_present(pagedir_t *dst, pagedir_t *src)
 
 void context_free(pagedir_t *context)
 {
-  panic("TODO implement me");
   for (int ptno = 0; ptno < USER_PAGE_TABLES; ptno++)
     {
       uint32_t pt = (*context)[ptno];
-      if (!(pt | PD_PRESENT))
+      if (!(pt & PD_PRESENT))
 	continue;
       pagetable_t *table = (pagetable_t*)(pt & PD_ADDR);
       pagetable_t buf;
@@ -60,7 +59,7 @@ void context_free(pagedir_t *context)
       for (int pageno = 0; pageno < PAGE_TABLE_SIZE; pageno++)
 	{
 	  uint32_t page = buf[pageno];
-	  if (!(page | PT_PRESENT))
+	  if (!(page & PT_PRESENT))
 	    continue;
 	  kpfree((void*)(page & PT_ADDR), 1);
 	}

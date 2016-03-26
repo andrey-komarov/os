@@ -82,7 +82,7 @@ void kernel_main(unsigned long magic, multiboot_info_t *mbi)
   context_clone_present(ctx2, ctx);
   set_page_dir(ctx2);
   context_free(ctx);
-  printk("New context at %p\n", *ctx2);
+  //printk("New context at %p\n", *ctx2);
 
   //test_userspace();
   //ata_identify();
