@@ -16,7 +16,7 @@ export AR = $(TARGET)-ar
 export ARFLAGS = rcs
 
 QEMU ?= qemu-system-i386
-QEMUFLAGS ?= -m 256 -boot d
+QEMUFLAGS ?= -m 16 -boot d
 
 GRUB_MKRESCUE ?= grub-mkrescue
 ISO_ROOT ?= isoroot

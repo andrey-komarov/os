@@ -30,6 +30,7 @@ void *phymem_alloc_page()
 
 void phymem_free_page(void *page)
 {
+  printk("phy free %p", page);
   assert(((uint32_t)page) % PAGE_SIZE == 0);
   uint32_t pageno = ((uint32_t)page) / PAGE_SIZE;
   assert(bitset_get(bitmap, pageno));

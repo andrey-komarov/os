@@ -106,5 +106,4 @@ void kpfree(void *addr, size_t pages)
       kpfree1((void*)page);
       page += PAGE_SIZE;
     }
-  panic("not implemented yet");
 }

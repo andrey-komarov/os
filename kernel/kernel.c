@@ -84,6 +84,16 @@ void kernel_main(unsigned long magic, multiboot_info_t *mbi)
   context_free(ctx);
   //printk("New context at %p\n", *ctx2);
 
+  for (int i = 0; i < 1000000; i++)
+    {
+      void *x = kpmalloc(100);
+      //printk("x = %p", x);
+      kpfree(x, 100);
+
+    }
+  printk("survived");
+  
+
   //test_userspace();
   //ata_identify();
     
