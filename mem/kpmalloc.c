@@ -1,16 +1,11 @@
 #include "kpmalloc.h"
 #include "mem.h"
-#include "kernel/mmu.h"
 #include "kernel/kernel.h"
 #include "libc/bitset.h"
 #include "libc/panic.h"
 #include "libc/assert.h"
 
 #include <stdint.h>
-
-#define KERNELSPACE_PAGES ((1 << (32 - PAGE_BITS)) - KERNEL_VMA / PAGE_SIZE)
-#define RESERVED_TABLES (KERNELSPACE_PAGES >> PAGE_DIR_BITS)
-#define KERNEL_FIRST_DIR_ENTRY (KERNEL_VMA >> (PAGE_BITS + PAGE_TABLE_BITS))
 
 static uint32_t kernel_pages_map[KERNELSPACE_PAGES / 32];
 

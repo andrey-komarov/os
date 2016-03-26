@@ -1,6 +1,9 @@
 #include "mmu.h"
 #include "kernel/interrupts.h"
 #include "libc/assert.h"
+#include "mem/kpmalloc.h"
+#include "libc/string.h"
+#include "mem/kpmalloc.h"
 
 /*
  * 31    24 23    16 15     8 7      0
@@ -43,7 +46,7 @@ void* virt_to_phy(void* addr)
   else
     {
       uint32_t page_no = ((uint32_t)addr >> PAGE_BITS) & ((1 << PAGE_TABLE_BITS) - 1);
-      pagetable_t *table = page_dir_entry & PD_ADDR;
+      pagetable_t *table = (pagetable_t*)(page_dir_entry & PD_ADDR);
       // Kernel page tables are not reallocated so this "nice trick"
       // allows us to get virtual address for `table` from physical
       // one
@@ -52,4 +55,32 @@ void* virt_to_phy(void* addr)
       uint32_t page = page_entry & PT_ADDR;
       return (void*)(page + (uint32_t)addr % PAGE_SIZE);
     }
+}
+
+void invlpg(void *page)
+{
+  __asm("invlpg (%0)": : "eax"(page));
+}
+
+#define TMP_PHY_PAGE_MAPPING ((void*)0xfffff000)
+static void mount_tmp_page(void *ppage)
+{
+  invlpg(ppage);
+  kernel_page_tables[KERNELSPACE_PAGES - 1][PAGE_TABLE_SIZE - 1] = PT_RW | PT_PRESENT | (uint32_t)ppage;
+}
+
+void read_phy_page(void *vdst, void *ppage)
+{
+  disable_interrupts();
+  mount_tmp_page(ppage);
+  memcpy(vdst, TMP_PHY_PAGE_MAPPING, PAGE_SIZE);
+  enable_interrupts();
+}
+
+void write_phy_page(void *pdst, void *vsrc)
+{
+  disable_interrupts();
+  mount_tmp_page(pdst);
+  memcpy(TMP_PHY_PAGE_MAPPING, vsrc, PAGE_SIZE);
+  enable_interrupts();
 }

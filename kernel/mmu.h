@@ -32,6 +32,9 @@ extern pagedir_t *virt_current_pagedir;
 
 void set_page_dir(pagedir_t *pagedir);
 void set_page_dir_rewrite_kernel(pagedir_t *pagedir);
+void read_phy_page(void *vdst, void *ppage);
+void write_phy_page(void *pdst, void *vpage);
+void invlpg(void *page);
 
 void* virt_to_phy(void* addr);
 

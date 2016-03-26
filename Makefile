@@ -47,6 +47,7 @@ $(DISK):
 	mkfs.fat -F 16 $(DISK)
 	echo "Hello FAT" > hello.txt
 	mcopy -i $(DISK) hello.txt ::hello.txt
+	mcopy -i $(DISK) aux/hello ::init
 
 %.a: FORCE
 	@echo "Building $(shell dirname $@)"
