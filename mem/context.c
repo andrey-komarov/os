@@ -2,6 +2,7 @@
 
 #include "mem/kpmalloc.h"
 #include "mem/mem.h"
+#include "libc/panic.h"
 
 pagedir_t *context_new()
 {
@@ -13,6 +14,7 @@ pagedir_t *context_new()
 
 void context_free(pagedir_t *context)
 {
+  panic("TODO implement me");
   for (int ptno = 0; ptno < USER_PAGE_TABLES; ptno++)
     {
       uint32_t pt = (*context)[ptno];
@@ -21,6 +23,7 @@ void context_free(pagedir_t *context)
       pagetable_t *table = (pagetable_t*)(pt & PD_ADDR);
       for (int pageno = 0; pageno < PAGE_TABLE_SIZE; pageno++)
 	{
+	  // table - это физический адрес, мудак
 	  uint32_t page = (*table)[pageno];
 	  if (!(page | PT_PRESENT))
 	    continue;
