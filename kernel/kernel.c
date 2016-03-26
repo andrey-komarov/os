@@ -77,9 +77,11 @@ void kernel_main(unsigned long magic, multiboot_info_t *mbi)
 
   pagedir_t *ctx = context_new();
   printk("New context at %p\n", *ctx);
-  context_init_kernel_pages(ctx);
-  printk("New context page %p\n", (*ctx)[768]);
-  set_page_dir(virt_current_pagedir);
+  set_page_dir(ctx);
+  pagedir_t *ctx2 = context_new();
+  printk("New context at %p\n", *ctx2);
+  set_page_dir(ctx2);
+
   //test_userspace();
   //ata_identify();
     

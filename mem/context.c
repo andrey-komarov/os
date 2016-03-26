@@ -5,13 +5,10 @@
 
 pagedir_t *context_new()
 {
-  return kpmalloc(1);
-}
-
-void context_init_kernel_pages(pagedir_t *context)
-{
+  pagedir_t *ctx = kpmalloc(1);
   for (int ptno = 0; ptno < PAGE_DIR_SIZE; ptno++)
-    (*context)[ptno] = 0;
+    (*ctx)[ptno] = 0;
+  return ctx;
 }
 
 void context_free(pagedir_t *context)

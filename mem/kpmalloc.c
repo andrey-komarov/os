@@ -82,14 +82,12 @@ static uint32_t find_free_consecutive(size_t pages)
 void* kpmalloc(size_t pages)
 {
   uint32_t first = find_free_consecutive(pages);
-  printk("kpmalloc: requested %u pages, allocating starting at %p", pages, KERNEL_VMA + first * PAGE_SIZE);
   for (int i = 0; i < pages; i++)
     {
       size_t pageno = first + i;
       bitset_set(kernel_pages_map, pageno, 1);
       size_t tableno = pageno / PAGE_TABLE_SIZE;
       uint32_t phypage = (uint32_t)phymem_alloc_page();
-      printk("pageno = %d tableno = %d phypage = %p", pageno, tableno, phypage);
       uint32_t *p = &kernel_page_tables[tableno][pageno % PAGE_TABLE_SIZE];
       assert(!(*p & PT_PRESENT));
       *p = phypage | PT_PRESENT | PT_RW;
