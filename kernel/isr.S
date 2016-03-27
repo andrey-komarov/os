@@ -46,7 +46,7 @@ int\num\()handler :
 	.global interr\num\()handler
 interr\num\()handler :
 	pushal
-	movl 28(%esp), %eax 	# error code (or 32?)
+	movl 32(%esp), %eax 	# error code (or 32?)
 	pushl %ds
 	pushl %es
 	pushl %ebp

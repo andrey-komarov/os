@@ -45,6 +45,14 @@ void int_syscall()
 
 void int_page_fault(uint32_t err)
 {
-  printk("Page Fault %x", err);
+  uint32_t cr2;
+  __asm volatile("movl %%cr2, %0" : "=r"(cr2));
+  printk("Page Fault at %p, err=%x", cr2, err);
+  printk("%s %s from %s %s %s",
+	 (err & 1) ? "page protection" : "non-present page",
+	 (err & 2) ? "WRITE" : "READ",
+	 (err & 4) ? "user" : "kernel",
+	 (err & 8) ? "reserved field" : "",
+	 (err & 16) ? "instruction fetch" : "");
   panic("Page Fault");
 }

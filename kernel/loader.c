@@ -143,6 +143,7 @@ static void *verify_elf_header(Elf32_Ehdr *hdr, pagedir_t *ctx)
 static void *prepare_stack(int argc, char **argv, pagedir_t *ctx)
 {
   void *stack = (char*)(KERNEL_VMA) - STACK_SIZE;
+  printk("prepare %p %p", stack, STACK_SIZE);
   map_range(stack, STACK_SIZE, ctx);
   int skip = 0;
   for (int i = 0; i < argc; i++)
@@ -150,6 +151,7 @@ static void *prepare_stack(int argc, char **argv, pagedir_t *ctx)
   char *top = (char*)stack + STACK_SIZE;
   top -= 4;
   *(uint32_t*)top = 0;
+  printk("lol");
   char *top2 = top - skip;
   top2 -= 4;
   *(uint32_t*)top2 = 0;
