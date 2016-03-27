@@ -194,7 +194,7 @@ int fat16_read(fat16_fd_t *fd, uint8_t *dst, uint32_t offset, uint32_t length)
   uint32_t size = fd->file_size;
 
   if (offset > size || offset + length > size)
-    return EFAULT;
+    return -EINVAL;
 
   uint32_t length2 = length;
   while (length > 0)

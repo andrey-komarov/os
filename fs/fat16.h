@@ -63,7 +63,7 @@ void fat16_init();
 
 fat16_fd_t *fat16_open(char *path, fat16_fd_t *fd);
 
-#define EFAULT (-1)
+#define EINVAL 1
 
 int fat16_read(fat16_fd_t *fd, uint8_t *dst, uint32_t offset, uint32_t length);
 

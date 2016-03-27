@@ -1,3 +1,4 @@
+#include <stddef.h>
 #include "mmu.h"
 #include "kernel/interrupts.h"
 #include "libc/assert.h"
@@ -66,21 +67,39 @@ void invlpg(void *page)
 static void mount_tmp_page(void *ppage)
 {
   invlpg(ppage);
-  kernel_page_tables[KERNELSPACE_PAGES - 1][PAGE_TABLE_SIZE - 1] = PT_RW | PT_PRESENT | (uint32_t)ppage;
+  kernel_page_tables[KERNELSPACE_PAGES / PAGE_TABLE_SIZE - 1][PAGE_TABLE_SIZE - 1] = PT_RW | PT_PRESENT | (uint32_t)ppage;
 }
 
 void read_phy_page(void *vdst, void *ppage)
 {
-  disable_interrupts();
-  mount_tmp_page(ppage);
-  memcpy(vdst, TMP_PHY_PAGE_MAPPING, PAGE_SIZE);
-  enable_interrupts();
+  return read_phy(vdst, ppage, PAGE_SIZE);
 }
 
 void write_phy_page(void *pdst, void *vsrc)
 {
+  return write_phy(pdst, vsrc, PAGE_SIZE);
+}
+
+void read_phy(void *vdst, void *paddr, size_t size)
+{
+  uint32_t ppage = (uint32_t)paddr / PAGE_SIZE * PAGE_SIZE;
+  assert((uint32_t)paddr + size < ppage + PAGE_SIZE);
+  uint32_t off = (uint32_t)paddr % PAGE_SIZE;
+
   disable_interrupts();
-  mount_tmp_page(pdst);
-  memcpy(TMP_PHY_PAGE_MAPPING, vsrc, PAGE_SIZE);
+  mount_tmp_page(ppage);
+  memcpy(vdst, TMP_PHY_PAGE_MAPPING + off, size);
+  enable_interrupts();
+}
+
+void write_phy(void *pdst, void *vaddr, size_t size)
+{
+  uint32_t ppage = (uint32_t)pdst / PAGE_SIZE * PAGE_SIZE;
+  assert((uint32_t)pdst + size <= ppage + PAGE_SIZE);
+  uint32_t off = (uint32_t)pdst % PAGE_SIZE;
+
+  disable_interrupts();
+  mount_tmp_page(ppage);
+  memcpy(((uint8_t*)TMP_PHY_PAGE_MAPPING) + off, vaddr, size);
   enable_interrupts();
 }

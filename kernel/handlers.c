@@ -26,13 +26,15 @@ void irq_ata2()
   printk("ATA2 IRQ");
 }
 
-void int_gpf()
+void int_gpf(uint32_t err)
 {
+  printk("GPF %x", err);
   panic("General Protection Failed");
 }
 
-void int_df()
+void int_df(uint32_t err)
 {
+  printk("DF %x", err);
   panic("Double Fault");
 }
 
@@ -41,7 +43,8 @@ void int_syscall()
   printk("syscall!");
 }
 
-void int_page_fault()
+void int_page_fault(uint32_t err)
 {
+  printk("Page Fault %x", err);
   panic("Page Fault");
 }

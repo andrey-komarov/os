@@ -31,9 +31,9 @@ void irq1handler();
 void irq14handler();
 void irq15handler();
 
-void int8handler();
-void int13handler();
-void int14handler();
+void interr8handler();
+void interr13handler();
+void interr14handler();
 void int42handler();
 void int0x80handler();
 

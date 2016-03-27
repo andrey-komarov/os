@@ -29,6 +29,15 @@ void runint(uint32_t intr)
   printk("int %d", intr);
 }
 
+void runinterr(uint32_t intr, uint32_t err)
+{
+  if (err_handlers[intr])
+    err_handlers[intr](err);
+  else
+    panic("Unknown err");
+  printk("err %d %d", intr, err);
+}
+
 void set_idt(uint16_t size, idt_entry_t* addr)
 {
   struct {
@@ -68,12 +77,12 @@ void init_interrupts()
   isr_init(PIC2 + PIC_ATA2, irq15handler, 0);
   irq_handlers[PIC_ATA2 + 8] = irq_ata2;
 
-  isr_init(INT_DOUBLE_FAULT, int8handler, 0);
-  int_handlers[INT_DOUBLE_FAULT] = int_df;
-  isr_init(INT_GPF, int13handler, 0);
-  int_handlers[INT_GPF] = int_gpf;
-  isr_init(INT_PAGE_FAULT, int14handler, 0);
-  int_handlers[INT_PAGE_FAULT] = int_page_fault;
+  isr_init(INT_DOUBLE_FAULT, interr8handler, 0);
+  err_handlers[INT_DOUBLE_FAULT] = int_df;
+  isr_init(INT_GPF, interr13handler, 0);
+  err_handlers[INT_GPF] = int_gpf;
+  isr_init(INT_PAGE_FAULT, interr14handler, 0);
+  err_handlers[INT_PAGE_FAULT] = int_page_fault;
   isr_init(SYSCALL, int0x80handler, 3);
   int_handlers[SYSCALL] = int_syscall;
   

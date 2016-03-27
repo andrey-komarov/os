@@ -11,6 +11,7 @@
 #include "fs/fat16.h"
 #include "mem/kpmalloc.h"
 #include "mem/context.h"
+#include "kernel/loader.h"
 
 extern char end_of_kernel;
 
@@ -75,23 +76,10 @@ void kernel_main(unsigned long magic, multiboot_info_t *mbi)
   printk("%s", buf);
   printk("EOK = %p, kernel size = %d bytes", &end_of_kernel, &end_of_kernel - (char*)0xc0100000);
 
-  //pagedir_t *ctx = context_new();
-  //printk("New context at %p\n", *ctx);
-  //set_page_dir(ctx);
-  //pagedir_t *ctx2 = context_new();
-  //context_clone_present(ctx2, ctx);
-  //set_page_dir(ctx2);
-  //context_free(ctx);
-  //printk("New context at %p\n", *ctx2);
-
-  for (int i = 0; i < 10000000; i++)
-    {
-      void *x = kpmalloc(1000);
-      printk("allocated %p", x);
-      kpfree(x, 1000);
-    }
-  printk("survived");
-  
+  pagedir_t *ctx = context_new();
+  printk("New context at %p\n", *ctx);
+  set_page_dir(ctx);
+  load_elf_from_file("/INIT", ctx);
 
   //test_userspace();
   //ata_identify();

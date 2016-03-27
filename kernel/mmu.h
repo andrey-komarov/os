@@ -2,6 +2,7 @@
 #define _MMU_H
 
 #include <stdint.h>
+#include <stddef.h>
 
 #include "mem/mem.h"
 
@@ -34,6 +35,8 @@ void set_page_dir(pagedir_t *pagedir);
 void set_page_dir_rewrite_kernel(pagedir_t *pagedir);
 void read_phy_page(void *vdst, void *ppage);
 void write_phy_page(void *pdst, void *vpage);
+void read_phy(void *vdst, void *paddr, size_t size);
+void write_phy(void *pdst, void *vaddr, size_t size);
 void invlpg(void *page);
 
 void* virt_to_phy(void* addr);
