@@ -84,6 +84,12 @@ void kernel_main(unsigned long magic, multiboot_info_t *mbi)
   //context_free(ctx);
   //printk("New context at %p\n", *ctx2);
 
+  for (int i = 0; i < 10000000; i++)
+    {
+      void *x = kpmalloc(1000);
+      printk("allocated %p", x);
+      kpfree(x, 1000);
+    }
   printk("survived");
   
 

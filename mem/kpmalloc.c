@@ -32,6 +32,8 @@ void init_vmem()
     }
   for (int i = 0; i <= last_kernel_page; i++)
     bitset_set(kernel_pages_map, i, 1);
+  // Reserve last page for `{read,write}_phy_page`
+  bitset_set(kernel_pages_map, sizeof(kernel_pages_map) * 8 - 1, 1);
   set_page_dir_rewrite_kernel(kernel_page_dir);
 }
 
@@ -93,8 +95,11 @@ void* kpmalloc(size_t pages)
 void kpfree1(void *addr)
 {
   uint32_t page = (uint32_t)addr;
-  bitset_set(kernel_pages_map, page / PAGE_SIZE, 0);
-  // TODO выпилить из kernel_page_tables
+  uint32_t pageno = page / PAGE_SIZE - USER_PAGE_TABLES * PAGE_TABLE_SIZE;
+  bitset_set(kernel_pages_map, pageno, 0);
+  uint32_t tableno = pageno / PAGE_TABLE_SIZE;
+  kernel_page_tables[tableno][pageno % PAGE_TABLE_SIZE]
+    &= ~PT_PRESENT;
   phymem_free_page(virt_to_phy(addr));
 }
 
