@@ -83,7 +83,7 @@ void write_phy_page(void *pdst, void *vsrc)
 void read_phy(void *vdst, void *paddr, size_t size)
 {
   uint32_t ppage = (uint32_t)paddr / PAGE_SIZE * PAGE_SIZE;
-  assert((uint32_t)paddr + size < ppage + PAGE_SIZE);
+  assert((uint32_t)paddr + size <= ppage + PAGE_SIZE);
   uint32_t off = (uint32_t)paddr % PAGE_SIZE;
 
   disable_interrupts();

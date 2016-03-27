@@ -7,6 +7,9 @@
 #include "mem/kpmalloc.h"
 #include "kernel/kernel.h"
 #include "libc/string.h"
+#include "kernel/userspace.h"
+
+#define STACK_SIZE (4096 * 16)
 
 void load_elf_from_file(char *path, pagedir_t *ctx)
 {
@@ -37,7 +40,7 @@ static void map_page(void *page, pagedir_t *ctx)
       uint32_t phy_newtable = (uint32_t)phymem_alloc_page();
       uint8_t buf[PAGE_SIZE];
       memset(buf, 0, sizeof(buf));
-      write_phy(phy_newtable, buf, sizeof(buf));
+      write_phy((void*)phy_newtable, buf, sizeof(buf));
       pdentry = phy_newtable | PD_PRESENT | PD_RW | PD_USER;
       (*ctx)[ptno] = pdentry;
     }
@@ -137,8 +140,39 @@ static void *verify_elf_header(Elf32_Ehdr *hdr, pagedir_t *ctx)
 
 }
 
+static void *prepare_stack(int argc, char **argv, pagedir_t *ctx)
+{
+  void *stack = (char*)(KERNEL_VMA) - STACK_SIZE;
+  map_range(stack, STACK_SIZE, ctx);
+  int skip = 0;
+  for (int i = 0; i < argc; i++)
+    skip += strlen(argv[i]) + 1;
+  char *top = (char*)stack + STACK_SIZE;
+  top -= 4;
+  *(uint32_t*)top = 0;
+  char *top2 = top - skip;
+  top2 -= 4;
+  *(uint32_t*)top2 = 0;
+  for (int i = argc - 1; i >= 0; i--)
+    {
+      int len = strlen(argv[i]);
+      memcpy(top - len - 1, argv[i], len + 1);
+      top -= len + 1;
+      top2 -= 4;
+      *(char**)top2 = top;
+    }
+  top2 -= 4;
+  *(uint32_t*)top2 = argc;
+  return top2;
+}
+
 void load_elf(uint8_t *elf, size_t len, pagedir_t *ctx)
 {
   void *eip = verify_elf_header((Elf32_Ehdr*)elf, ctx);
-  printk("Entry point: %p", eip);
+  char *argv[] = {"lol", NULL};
+  size_t argc = sizeof(argv) / sizeof(argv[0]) - 1;
+  printk("preparing stack...");
+  void *esp = prepare_stack(argc, argv, ctx);
+  printk("Entry point: %p %p", eip, esp);
+  jmp_to_userspace(eip, esp);
 }

@@ -36,3 +36,28 @@ void test_userspace()
     : "eax");
   __builtin_unreachable();
 }
+
+void jmp_to_userspace(void *eip, void *esp)
+{
+  printk("JUMP! %p %p", eip, esp);
+  __asm volatile(
+    "movw %0, %%ax\n\t"
+    "movw %%ax, %%ds\n\t"
+    "movw %%ax, %%es\n\t"
+    "movw %%ax, %%fs\n\t"
+    "movw %%ax, %%gs\n\t"
+    "movl %%esp, %%eax\n\t"
+    "pushl %0\n\t" // stack segment
+    "pushl %3\n\t" // userspace stack
+    "pushf\n\t"
+    "pushl %1\n\t" // code segment
+    "pushl %2\n\t" // userspace IP
+    "iret\n\t"
+    :
+    : "i"(USER_DATA_SEGMENT * sizeof(gdt_entry_t) + 3)
+    , "i"(USER_CODE_SEGMENT * sizeof(gdt_entry_t) + 3)
+    , "r"(eip)
+    , "r"(esp)
+    : "eax");
+  __builtin_unreachable();
+}
