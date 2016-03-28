@@ -23,6 +23,8 @@
 #define PT_PRESENT (1 << 0)
 #define PT_RW (1 << 1)
 #define PT_USER (1 << 2)
+#define PT_WRITETHROUGH (1 << 3)
+#define PT_NOCACHE (1 << 4)
 #define PT_ADDR (~((1 << PAGE_TABLE_BITS) - 1))
 
 typedef uint32_t pagedir_t[PAGE_DIR_SIZE] __attribute__((aligned(PAGE_SIZE)));

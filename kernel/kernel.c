@@ -12,6 +12,7 @@
 #include "mem/kpmalloc.h"
 #include "mem/context.h"
 #include "kernel/loader.h"
+#include "libc/assert.h"
 
 extern char end_of_kernel;
 
@@ -81,6 +82,7 @@ void kernel_main(unsigned long magic, multiboot_info_t *mbi)
   set_page_dir(ctx);
   load_elf_from_file("/INIT", ctx);
 
+  printk("lalala");
   //test_userspace();
   //ata_identify();
     

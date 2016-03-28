@@ -60,14 +60,18 @@ void* virt_to_phy(void* addr)
 
 void invlpg(void *page)
 {
-  __asm("invlpg (%0)": : "eax"(page));
+  //__asm volatile("movl %%cr3, %%eax\n\t"
+  //		 "movl %%eax, %%cr3"
+  //		 ::: "memory", "eax");
+  __asm volatile("invlpg (%0)": : "eax"(page) : "memory");
 }
 
 #define TMP_PHY_PAGE_MAPPING ((void*)0xfffff000)
 static void mount_tmp_page(void *ppage)
 {
-  invlpg(ppage);
-  kernel_page_tables[KERNELSPACE_PAGES / PAGE_TABLE_SIZE - 1][PAGE_TABLE_SIZE - 1] = PT_RW | PT_PRESENT | (uint32_t)ppage;
+  invlpg(TMP_PHY_PAGE_MAPPING);
+  kernel_page_tables[KERNELSPACE_PAGES / PAGE_TABLE_SIZE - 1][PAGE_TABLE_SIZE - 1] =
+    PT_RW | PT_PRESENT | PT_WRITETHROUGH | PT_NOCACHE | (uint32_t)ppage;
 }
 
 void read_phy_page(void *vdst, void *ppage)
@@ -88,7 +92,7 @@ void read_phy(void *vdst, void *paddr, size_t size)
 
   disable_interrupts();
   mount_tmp_page(ppage);
-  memcpy(vdst, TMP_PHY_PAGE_MAPPING + off, size);
+  memcpy(vdst, ((uint8_t*)TMP_PHY_PAGE_MAPPING) + off, size);
   enable_interrupts();
 }
 
